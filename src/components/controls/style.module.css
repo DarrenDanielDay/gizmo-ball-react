@@ -1,0 +1,26 @@
+.mode-zone {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.mode-col {
+  width: 60px;
+}
+.button {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  border-radius: 10px;
+  width: 111px;
+  cursor: pointer;
+}
+.controll-img {
+  margin-right: 30px;
+  cursor: pointer;
+}
+
+.span {
+  font-family: fantasy;
+  font-size: 50px;
+  margin-bottom: 10px;
+}

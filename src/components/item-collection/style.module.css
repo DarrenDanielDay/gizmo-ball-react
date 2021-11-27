@@ -1,0 +1,20 @@
+.item-zone {
+  height: 100%;
+}
+
+.two-item {
+  display: flex;
+  justify-content: center;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  margin: 5px 10px;
+}
+
+.img {
+  margin-left: 5px;
+  height: 48px;
+  width: 48px;
+}

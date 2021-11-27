@@ -1,0 +1,11 @@
+.game-panel {
+  height: 100%;
+  width: 100%;
+}
+.game-grid {
+  height: 719px;
+  width: 719px;
+  border: inset;
+  position: relative;
+  background-image: url("../../img/grid.png");
+}

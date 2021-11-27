@@ -1,3 +1,6 @@
 .snowpack
 build
 node_modules
+*.d.ts
+*.d.ts.map
+!src/types/static.d.ts

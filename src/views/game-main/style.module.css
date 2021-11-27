@@ -1,0 +1,39 @@
+.game {
+  display: flex;
+  height: 100%;
+}
+.border {
+  border-style: inset;
+  border-color: #000;
+  border-width: 2px;
+}
+
+.main {
+  width: 734px;
+}
+
+.right-side {
+  width: 250px;
+  max-width: 250px;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background-color: #fff;
+}
+.right-top {
+  height: 45.5%;
+}
+
+.right-middle {
+  height: 21.5%;
+}
+
+.right-bottom {
+  height: 33%;
+}
+.instruction {
+  padding: 0 0 0 20px;
+  width: 360px;
+  text-align: left;
+  flex: none;
+}
