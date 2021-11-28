@@ -1,5 +1,5 @@
 /** @type {import("snowpack").SnowpackUserConfig } */
-export default {
+const config = {
   mount: {
     public: { url: '/', static: true },
     src: { url: '/' },
@@ -30,6 +30,7 @@ export default {
     /* ... */
   },
   buildOptions: {
-    /* ... */
+    sourcemap: true,
   },
 };
+export default config;
