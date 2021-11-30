@@ -25,11 +25,11 @@ export interface Polygon extends BaseShape {
    */
   vertexes: Vector2D[];
 }
-
-export interface Square extends Polygon {
-  vertexes: [Vector2D, Vector2D, Vector2D, Vector2D];
-}
-
 export interface Triangle extends Polygon {
   vertexes: [Vector2D, Vector2D, Vector2D];
 }
+
+export interface Quadrilateral extends Polygon {
+  vertexes: [Vector2D, Vector2D, Vector2D, Vector2D];
+}
+
