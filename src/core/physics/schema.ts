@@ -7,6 +7,7 @@ export interface MassPoint {
   p: Vector2D;
   v: Vector2D;
   a: Vector2D;
+  m: number;
 }
 
 interface BaseShape {

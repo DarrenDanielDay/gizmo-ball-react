@@ -5,7 +5,6 @@
 .game-grid {
   height: 719px;
   width: 719px;
-  border: inset;
   position: relative;
   background-image: url("../../img/grid.png");
 }

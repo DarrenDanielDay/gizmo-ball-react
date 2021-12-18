@@ -26,9 +26,3 @@
 .right-bottom {
   height: 33%;
 }
-.instruction {
-  padding: 0 0 0 20px;
-  width: 360px;
-  text-align: left;
-  flex: none;
-}

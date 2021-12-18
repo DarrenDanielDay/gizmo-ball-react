@@ -1,0 +1,13 @@
+.map-item {
+  position: absolute;
+}
+
+.map-item-boarder {
+  position: absolute;
+  box-sizing: border-box;
+  z-index: 1;
+}
+
+.selected {
+  border: 1px greenyellow solid;
+}

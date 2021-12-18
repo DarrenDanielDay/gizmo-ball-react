@@ -37,3 +37,7 @@ export const ItemCollectionImageMap: Record<OperationItemNames, string> = {
   square: square,
   triangle: triangle,
 };
+
+export const tick = 0.025;
+
+export const gridLength = 36;

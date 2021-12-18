@@ -6,9 +6,17 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+  user-select: none;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+
+#game-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-width: max-content;
 }

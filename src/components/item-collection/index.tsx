@@ -1,8 +1,9 @@
 import React, { useState } from "react";
-import {
-  ItemCollectionImageMap,
-  OperationItemNames,
-} from "../../core/constants/map-items";
+import { gridLength, ItemCollectionImageMap, OperationItemNames } from "../../core/constants/map-items";
+import { setDataToTransfer } from "../../core/map-items/data-transfer";
+import { createMapItem } from "../../core/map-items/factory";
+import type { MapItemNames } from "../../core/map-items/schemas";
+import { vector } from "../../core/physics/vector";
 import styles from "./style.module.css";
 
 const itemOrders: [OperationItemNames, OperationItemNames][] = [
@@ -22,26 +23,27 @@ export const ItemCollection: React.FC = () => {
         <tbody>
           {itemOrders.map((pair, i) => (
             <tr key={i} className={styles["two-item"]}>
-              {pair.map((item, i) => (
-                <td key={i}>
+              {pair.map((name, j) => (
+                <td key={j}>
                   <label className={styles.item}>
                     <input
-                      checked={item === itemName}
+                      name="chooseItem"
+                      checked={name === itemName}
                       type="radio"
-                      value={item}
+                      value={name}
                       onChange={(e) => setItemName(e.target.value as never)}
                     ></input>
-                    <img
-                      className={styles.img}
-                      draggable={item !== "select"}
-                      onDragStart={() => {
-                        console.log("drag start!");
-                      }}
-                      onDragEnd={() => {
-                        console.log("drag end!");
-                      }}
-                      src={ItemCollectionImageMap[item]}
-                    />
+                    {name === "select" ? (
+                      <img className={styles.img} src={ItemCollectionImageMap.select} />
+                    ) : (
+                      <img
+                        className={styles.img}
+                        onDragStart={(e) => {
+                          setDataToTransfer(e.dataTransfer, { item: createMapItem(name, vector(0, 0), gridLength) });
+                        }}
+                        src={ItemCollectionImageMap[name]}
+                      />
+                    )}
                   </label>
                 </td>
               ))}
