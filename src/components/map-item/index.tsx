@@ -20,17 +20,17 @@ const rotationMap: Record<Rotation, string> = {
 };
 
 export const MapItemComponent: React.FC<IMapItemComponentProp> = ({ mapItem: item, onClick }) => {
-  const { center, size, status } = item;
+  const { center, size, status, name } = item;
   const position = getPosition(center, size);
   const rotation = canRotate(item) ? item.rotation : Rotation.Up;
   const geometryStyle: CSSProperties = { left: position.x, top: position.y, width: size.x, height: size.y };
   const selected = status === MapItemStatus.Selected;
-  return (
+  return name === "border" ? null : (
     <img
       draggable={selected}
       className={classNames(
         styles["map-item-boarder"],
-        item.status === MapItemStatus.Selected && styles.selected,
+        status === MapItemStatus.Selected && styles.selected,
         styles["map-item"],
         rotationMap[rotation],
       )}
@@ -39,7 +39,7 @@ export const MapItemComponent: React.FC<IMapItemComponentProp> = ({ mapItem: ite
       onDragStart={(e) => {
         setDataToTransfer(e.dataTransfer, { item, from: "panel", pickedUpPosition: vector(e.pageX, e.pageY) });
       }}
-      src={ItemImageMap[item.name]}
+      src={ItemImageMap[name]}
     ></img>
   );
 };

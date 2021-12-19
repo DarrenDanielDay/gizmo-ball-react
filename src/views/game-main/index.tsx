@@ -7,7 +7,7 @@ import { ToolCollection } from "../../components/tool-collection";
 import { Controls } from "../../components/controls";
 import { MapItem, MapItemStatus } from "../../core/map-items/schemas";
 import type { Vector2D } from "../../core/physics/schema";
-import { gridLength, OperationItemNames } from "../../core/constants/map-items";
+import { gridLength, gridXCellCounts, gridYCellCounts, OperationItemNames } from "../../core/constants/map-items";
 import { add, multiply, substract, vector } from "../../core/physics/vector";
 import { removeItemInArray, replaceItemInArray } from "../../core/physics/utils";
 import {
@@ -20,7 +20,7 @@ import {
 } from "../../core/map-items/operations";
 import { hasAnyCollision } from "../../core/physics/collider";
 import { Mode } from "../../core/controller/schema";
-import { createMapItem, sizeOfMapItem } from "../../core/map-items/factory";
+import { createBorder, createMapItem, sizeOfMapItem } from "../../core/map-items/factory";
 
 const normalizeToCenter = (pointer: Vector2D, size: Vector2D, length: number) => {
   const offset = multiply(size, 0.5);
@@ -31,7 +31,9 @@ const normalizeToCenter = (pointer: Vector2D, size: Vector2D, length: number) =>
 
 export const GameMainView: React.FC = () => {
   const [itemName, setItemName] = useState<OperationItemNames>("select");
-  const [mapItems, _setMapItems] = useState<MapItem[]>([]);
+  const [mapItems, _setMapItems] = useState<MapItem[]>(() =>
+    createBorder(gridLength, gridXCellCounts, gridYCellCounts),
+  );
   const setMapItems: React.Dispatch<React.SetStateAction<MapItem[]>> = (action) =>
     _setMapItems((items) => {
       const pendingItems = typeof action === "function" ? action(items) : action;

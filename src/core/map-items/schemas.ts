@@ -38,6 +38,11 @@ export interface WithRotation {
   rotation: Rotation;
 }
 
+export interface BorderMapItem extends BaseMapItem {
+  name: "border";
+  collider: Quadrilateral;
+}
+
 export interface Ball extends BaseMapItem {
   name: "ball";
   collider: Circle;
@@ -85,6 +90,7 @@ export interface BaffleBetaMapItem extends BaseMapItem {
 
 export type MapItem =
   | Ball
+  | BorderMapItem
   | AbsorberMapItem
   | TriangleMapItem
   | CircleMapItem

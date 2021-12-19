@@ -1,7 +1,7 @@
 import type { Vector2D } from "../physics/schema";
 import { circle, isoscelesRightTriangle, parallelogram, square } from "../physics/shape";
 import { vector } from "../physics/vector";
-import { BaseMapItem, MapItem, MapItemNames, MapItemStatus, Rotation } from "./schemas";
+import { BaseMapItem, BorderMapItem, MapItem, MapItemNames, MapItemStatus, Rotation } from "./schemas";
 
 const basicRay = (length: number) => vector(length, length);
 
@@ -27,7 +27,7 @@ export const createMapItem = (name: MapItemNames, center: Vector2D, length: numb
   const basicProps: Omit<BaseMapItem, "name"> = {
     center,
     status: MapItemStatus.Normal,
-    size: sizeOfMapItem(name, length)
+    size: sizeOfMapItem(name, length),
   };
   switch (name) {
     case "ball":
@@ -103,4 +103,31 @@ export const createMapItem = (name: MapItemNames, center: Vector2D, length: numb
     default:
       throw new Error(`Unknown map item name: ${name}`);
   }
+};
+
+export const createBorder = (length: number, xCellCount: number, yCellCount: number): BorderMapItem[] => {
+  const width = xCellCount * length;
+  const height = yCellCount * length;
+  const urdl = [
+    [1, 0, 0, -1],
+    [0, 1, 1, 0],
+    [1, 0, 0, 1],
+    [0, 1, -1, 0],
+  ];
+  const result: BorderMapItem[] = [];
+  for (const [bx, by, sx, sy] of urdl) {
+    const center = vector(
+      (bx * width + sx * length) / 2 + (sx > 0 ? width : 0),
+      (by * height + sy * length) / 2 + (sy > 0 ? height : 0),
+    );
+    const size = vector(bx * width + (1 - bx) * length, by * height + (1 - by) * length);
+    result.push({
+      center,
+      size,
+      collider: parallelogram(center, vector(size.x, 0), vector(0, size.y)),
+      name: "border",
+      status: MapItemStatus.Normal,
+    });
+  }
+  return result;
 };

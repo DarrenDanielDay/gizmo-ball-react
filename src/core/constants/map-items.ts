@@ -42,6 +42,10 @@ export const tick = 0.025;
 
 export const gridLength = 36;
 
+export const gridXCellCounts = 20;
+
+export const gridYCellCounts = 20;
+
 // For debug
 // @ts-ignore
 window.down = v => ({x: v.x / gridLength, y: v.y / gridLength})

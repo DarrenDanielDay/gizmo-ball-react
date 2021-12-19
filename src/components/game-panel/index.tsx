@@ -24,6 +24,9 @@ export const GamePanel: React.FC<GamePanelProps> = ({ mapItems, onMapItemsChange
         onDragOver={(e) => e.preventDefault()}
         onDrop={(e) => {
           const data = getDataFromTransfer(e.dataTransfer);
+          if (!data) {
+            return;
+          }
           const panelEl = panelContainerRef.current!;
           const panelOffset = vector(panelEl.offsetLeft, panelEl.offsetTop);
           const absolutePickedCenter = add(data.item.center, panelOffset);

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import pause from "../../img/pause.png";
 import resume from "../../img/resume.png";
 import { Mode } from "../../core/controller/schema";
