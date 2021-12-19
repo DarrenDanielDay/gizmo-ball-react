@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { gridLength, ItemCollectionImageMap, OperationItemNames } from "../../core/constants/map-items";
 import { setDataToTransfer } from "../../core/map-items/data-transfer";
 import { createMapItem } from "../../core/map-items/factory";
-import type { MapItemNames } from "../../core/map-items/schemas";
 import { vector } from "../../core/physics/vector";
 import styles from "./style.module.css";
 
@@ -14,8 +13,12 @@ const itemOrders: [OperationItemNames, OperationItemNames][] = [
   ["baffle-alpha", "baffle-beta"],
 ];
 
-export const ItemCollection: React.FC = () => {
-  const [itemName, setItemName] = useState<OperationItemNames>("select");
+export interface ItemCollectionProps {
+  itemName: OperationItemNames;
+  setItemName?: React.Dispatch<React.SetStateAction<OperationItemNames>>;
+}
+
+export const ItemCollection: React.FC<ItemCollectionProps> = ({ itemName, setItemName }) => {
   return (
     <div className={styles["item-zone"]}>
       <span>Item Collection</span>
@@ -31,7 +34,7 @@ export const ItemCollection: React.FC = () => {
                       checked={name === itemName}
                       type="radio"
                       value={name}
-                      onChange={(e) => setItemName(e.target.value as never)}
+                      onChange={(e) => setItemName?.(e.target.value as never)}
                     ></input>
                     {name === "select" ? (
                       <img className={styles.img} src={ItemCollectionImageMap.select} />
@@ -39,7 +42,10 @@ export const ItemCollection: React.FC = () => {
                       <img
                         className={styles.img}
                         onDragStart={(e) => {
-                          setDataToTransfer(e.dataTransfer, { item: createMapItem(name, vector(0, 0), gridLength) });
+                          setDataToTransfer(e.dataTransfer, {
+                            item: createMapItem(name, vector(0, 0), gridLength),
+                            from: "collection",
+                          });
                         }}
                         src={ItemCollectionImageMap[name]}
                       />

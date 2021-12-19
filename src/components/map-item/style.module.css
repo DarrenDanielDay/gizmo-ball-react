@@ -11,3 +11,19 @@
 .selected {
   border: 1px greenyellow solid;
 }
+
+
+.rotate-up {
+  transform: rotateZ(0deg);  
+}
+.rotate-right {
+  transform: rotateZ(90deg);  
+}
+
+.rotate-down {
+  transform: rotateZ(180deg);  
+}
+
+.rotate-left {
+  transform: rotateZ(270deg);
+}

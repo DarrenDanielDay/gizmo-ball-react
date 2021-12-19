@@ -1,7 +1,10 @@
+import type { Vector2D } from "../physics/schema";
 import type { MapItem } from "./schemas";
 
 export interface MapItemTransferData {
   item: MapItem;
+  from: "collection" | "panel";
+  pickedUpPosition?: Vector2D;
 }
 
 export const setDataToTransfer = (dataTransfer: DataTransfer, data: MapItemTransferData) => {

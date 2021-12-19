@@ -41,3 +41,7 @@ export const ItemCollectionImageMap: Record<OperationItemNames, string> = {
 export const tick = 0.025;
 
 export const gridLength = 36;
+
+// For debug
+// @ts-ignore
+window.down = v => ({x: v.x / gridLength, y: v.y / gridLength})

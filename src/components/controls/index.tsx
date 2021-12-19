@@ -5,16 +5,22 @@ import { Mode } from "../../core/controller/schema";
 import arrow from "../../img/arrow.png";
 import styles from "./style.module.css";
 
-export const Controls: React.FC = () => {
-  const [mode, setMode] = useState(Mode.Layout);
-  const [paused, setPaused] = useState(false);
-  const handleLayoutMode = () => {
-    setMode(Mode.Layout);
-    setPaused(false);
-  };
-  const handlePlayMode = () => {
-    setMode(Mode.Play);
-  };
+export interface ControlsProps {
+  mode: Mode;
+  paused: boolean;
+  setPaused?: React.Dispatch<React.SetStateAction<boolean>>;
+  handleLayoutMode?: () => void;
+  handlePlayMode?: () => void;
+}
+
+export const Controls: React.FC<ControlsProps> = ({
+  mode,
+  paused,
+  handleLayoutMode,
+  handlePlayMode,
+  setPaused
+}) => {
+  
   const isPlaying = mode === Mode.Play;
   return (
     <div className={styles["mode-zone"]}>
@@ -47,7 +53,7 @@ export const Controls: React.FC = () => {
                   height="30"
                   src={paused ? resume : pause}
                   onClick={() => {
-                    setPaused((p) => !p);
+                    setPaused?.((p) => !p);
                   }}
                 />
               )}

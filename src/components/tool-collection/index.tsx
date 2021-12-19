@@ -5,7 +5,19 @@ import rotate from "../../img/rotate.png";
 import zoomOut from "../../img/zoom-out.png";
 import styles from "./style.module.css";
 
-export const ToolCollection: React.FC = () => {
+export interface ToolCollectionProps {
+  onRotate?: () => void;
+  onRemove?: () => void;
+  onZoomIn?: () => void;
+  onZoomOut?: () => void;
+}
+
+export const ToolCollection: React.FC<ToolCollectionProps> = ({
+  onRotate,
+  onRemove,
+  onZoomIn,
+  onZoomOut
+}) => {
   return (
     <div>
       <span>Tool Collection</span>
@@ -13,18 +25,18 @@ export const ToolCollection: React.FC = () => {
         <tbody>
           <tr>
             <td>
-              <img className={styles.tool} src={rotate} />
+              <img className={styles.tool} src={rotate} onClick={onRotate} />
             </td>
             <td>
-              <img className={styles.tool} src={remove} />
+              <img className={styles.tool} src={remove} onClick={onRemove} />
             </td>
           </tr>
           <tr>
             <td>
-              <img className={styles.tool} src={zoomIn} />
+              <img className={styles.tool} src={zoomIn} onClick={onZoomIn} />
             </td>
             <td>
-              <img className={styles.tool} src={zoomOut} />
+              <img className={styles.tool} src={zoomOut} onClick={onZoomOut} />
             </td>
           </tr>
         </tbody>
