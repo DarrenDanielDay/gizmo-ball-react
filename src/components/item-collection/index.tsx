@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { gridLength, ItemCollectionImageMap, OperationItemNames } from "../../core/constants/map-items";
 import { setDataToTransfer } from "../../core/map-items/data-transfer";
 import { createMapItem } from "../../core/map-items/factory";

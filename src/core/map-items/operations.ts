@@ -38,7 +38,7 @@ export const zoomItem = <T extends Extract<MapItem, WithScale>>(item: T, reduceS
     size: newSize,
     center: newCenter,
     collider: isCircle(collider)
-      ? { ...collider, radius: (collider.radius / scale) * newScale }
+      ? { ...collider, center: newCenter, radius: (collider.radius / scale) * newScale }
       : isPolygon(collider)
       ? { ...collider, center: newCenter, vertexes: collider.vertexes.map((v) => zoom(v, scale, newScale)) }
       : collider,

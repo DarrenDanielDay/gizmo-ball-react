@@ -11,9 +11,10 @@ export interface GamePanelProps {
   mapItems: MapItem[];
   onMapItemsChange?: (mapItems: MapItem[]) => void;
   onDropItem?: (name: MapItemTransferData, offsetPosition: Vector2D) => void;
+  onClick?: (offset: Vector2D) => void;
 }
 
-export const GamePanel: React.FC<GamePanelProps> = ({ mapItems, onMapItemsChange, onDropItem }) => {
+export const GamePanel: React.FC<GamePanelProps> = ({ mapItems, onMapItemsChange, onDropItem, onClick }) => {
   const panelContainerRef = useRef<HTMLDivElement>(null);
   return (
     <div className={styles["game-panel"]}>
@@ -31,6 +32,13 @@ export const GamePanel: React.FC<GamePanelProps> = ({ mapItems, onMapItemsChange
           const absoluteDropPosition = vector(e.pageX, e.pageY);
           const droppedOffset = substract(absoluteDropPosition, panelOffset);
           onDropItem?.(data, substract(droppedOffset, cursorCenterOffset));
+        }}
+        onClick={(e) => {
+          const panelEl = panelContainerRef.current!;
+          const panelOffset = vector(panelEl.offsetLeft, panelEl.offsetTop);
+          const clickedAbsolutePosition = vector(e.pageX, e.pageY);
+          const clickedOffset = substract(clickedAbsolutePosition, panelOffset);
+          onClick?.(clickedOffset);
         }}
       >
         {mapItems.map((item, i) => (

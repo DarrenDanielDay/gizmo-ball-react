@@ -20,6 +20,7 @@ import {
 } from "../../core/map-items/operations";
 import { hasAnyCollision } from "../../core/physics/collider";
 import { Mode } from "../../core/controller/schema";
+import { createMapItem, sizeOfMapItem } from "../../core/map-items/factory";
 
 const normalizeToCenter = (pointer: Vector2D, size: Vector2D, length: number) => {
   const offset = multiply(size, 0.5);
@@ -53,6 +54,17 @@ export const GameMainView: React.FC = () => {
         <GamePanel
           mapItems={mapItems}
           onMapItemsChange={(items) => setMapItems(items)}
+          onClick={(offset) => {
+            itemName !== "select" &&
+              setMapItems((items) => [
+                ...items,
+                createMapItem(
+                  itemName,
+                  normalizeToCenter(offset, sizeOfMapItem(itemName, gridLength), gridLength),
+                  gridLength,
+                ),
+              ]);
+          }}
           onDropItem={(data, offset) => {
             const { item, from } = data;
             setMapItems((items) => {

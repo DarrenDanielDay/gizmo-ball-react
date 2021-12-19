@@ -92,13 +92,13 @@ export const createMapItem = (name: MapItemNames, center: Vector2D, length: numb
       return {
         name: "baffle-alpha",
         ...basicProps,
-        collider: parallelogram(center, vector(0, length * 2), vector(length / 4, 0)),
+        collider: parallelogram(center, vector(length * 2, 0), vector(0, length / 4)),
       };
     case "baffle-beta":
       return {
         name: "baffle-beta",
         ...basicProps,
-        collider: parallelogram(center, vector(0, length * 2), vector(length / 4, 0)),
+        collider: parallelogram(center, vector(length * 2, 0), vector(0, length / 4)),
       };
     default:
       throw new Error(`Unknown map item name: ${name}`);
