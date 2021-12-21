@@ -1,8 +1,8 @@
 import { collides, isCircle, isPolygon } from "../physics/collider";
 import type { Vector2D } from "../physics/schema";
-import { next } from "../physics/utils";
+import { nextElement } from "../physics/utils";
 import { add, multiply, rotate, substract } from "../physics/vector";
-import { MapItem, Rotation, WithRotation, WithScale } from "./schemas";
+import { MapItem, MapItemNames, MovingMapItem, Rotation, StaticMapItem, WithRotation, WithScale } from "./schemas";
 
 export const canRotate = (item: MapItem): item is Extract<MapItem, WithRotation> =>
   typeof (item as WithRotation).rotation === "number";
@@ -14,11 +14,12 @@ export const rotateItem = <T extends Extract<MapItem, WithRotation>>(item: T): T
   return {
     ...item,
     collider: isPolygon(collider) ? { ...collider, vertexes: collider.vertexes.map((v) => rotate(v)) } : collider,
-    rotation: rotations[next(rotations.length, rotation)],
+    rotation: nextElement(rotations, rotation),
   };
 };
 
-export const canZoom = (item: MapItem): item is Extract<MapItem, WithScale> => typeof (item as WithScale).scale === "number";
+export const canZoom = (item: MapItem): item is Extract<MapItem, WithScale> =>
+  typeof (item as WithScale).scale === "number";
 
 export const getPosition = (center: Vector2D, size: Vector2D) => substract(center, multiply(size, 0.5));
 
@@ -47,3 +48,8 @@ export const zoomItem = <T extends Extract<MapItem, WithScale>>(item: T, reduceS
 
 export const zoomInReducer = (scale: number) => scale + 1;
 export const zoomOutReducer = (scale: number) => Math.max(1, scale - 1);
+
+const movableNames: MapItemNames[] = ["ball", "baffle-alpha", "baffle-beta"];
+
+export const isMovable = (item: MapItem): item is MovingMapItem => movableNames.some((name) => name === item.name);
+export const isStatic = (item: MapItem): item is StaticMapItem => !isMovable(item);

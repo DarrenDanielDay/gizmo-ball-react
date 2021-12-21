@@ -1,24 +1,40 @@
 import type { MapItem } from "../map-items/schemas";
 import type { Circle, Polygon, Vector2D } from "./schema";
-import { hasOverlap, last, ProjectionRange } from "./utils";
-import { add, distance, projection, rotate, substract } from "./vector";
+import { hasOverlap, lastElement, ProjectionRange } from "./utils";
+import { add, distance, dot, projection, rotate, substract } from "./vector";
 
 export const polygonCollidesWithPolygon = (polygon1: Polygon, polygon2: Polygon): boolean => {
   const axes = [...getAxes(polygon1.vertexes), ...getAxes(polygon2.vertexes)];
   const absoluteVertexes1 = absoluteVertexes(polygon1);
   const absoluteVertexes2 = absoluteVertexes(polygon2);
-  return axes.every((axis) => hasOverlap(projectVertexes(absoluteVertexes1, axis), projectVertexes(absoluteVertexes2, axis)));
+  return axes.every((axis) =>
+    hasOverlap(projectVertexes(absoluteVertexes1, axis), projectVertexes(absoluteVertexes2, axis)),
+  );
 };
 
 export const polygonCollidesWithCircle = (polygon: Polygon, circle: Circle): boolean => {
   const circleCenter = circle.center;
   const polygonAbsoluteVertexes = absoluteVertexes(polygon);
-  const closestPoint = getPolygonPointClosestToCircle(polygonAbsoluteVertexes, circleCenter);
+  const [closestPoint] = reduceClosestPoint(polygonAbsoluteVertexes, circleCenter);
   const axes = getAxes(polygon.vertexes);
   axes.push(substract(closestPoint, circleCenter));
   return axes.every((axis) => hasOverlap(projectCircle(circle, axis), projectVertexes(polygonAbsoluteVertexes, axis)));
 };
 
+export const circleCollidesOnEdge = (circle: Circle, p1: Vector2D, p2: Vector2D) => {
+  const { center, radius } = circle;
+  const p1p = substract(center, p1);
+  const p2p = substract(center, p2);
+  const edge = substract(p1, p2);
+  const axis = rotate(edge);
+  if (dot(p1p, axis) <= 0) {
+    // center is in the inside of edge
+    return false;
+  }
+  return (
+    dot(p1p, edge) < 0 && 0 < dot(p2p, edge) && radius >= Math.abs(projection(center, axis) - projection(p1, axis))
+  );
+};
 export const circleCollidesWithCircle = (circle1: Circle, circle2: Circle) =>
   distance(circle1.center, circle2.center) < circle1.radius + circle2.radius;
 
@@ -58,23 +74,19 @@ export const hasAnyCollision = (colliders: Collider[]) =>
     return false;
   });
 
-const absoluteVertexes = (polygon: Polygon) => polygon.vertexes.map((v) => add(polygon.center, v));
+export const absoluteVertexes = (polygon: Polygon) => polygon.vertexes.map((v) => add(polygon.center, v));
 
-const getPolygonPointClosestToCircle = (polygonAbsoluteVertexes: Vector2D[], circleCenter: Vector2D) => {
-  let closestPoint = polygonAbsoluteVertexes[0]!;
-  let min = distance(closestPoint, circleCenter);
-  // Clearer logic with Array.prototype.reduce
-  for (const point of polygonAbsoluteVertexes) {
-    const length = distance(point, circleCenter);
-    if (min > length) {
-      min = length;
-      closestPoint = point;
-    }
-  }
-  return closestPoint;
-};
+export const reduceClosestPoint = (points: Vector2D[], origin: Vector2D) =>
+  points.reduce<[Vector2D, number, number]>(
+    ([closest, length, index], point, i) => {
+      const currentLength = distance(point, origin);
+      const useCurrent = length >= currentLength;
+      return [useCurrent ? point : closest, useCurrent ? currentLength : length, useCurrent ? i : index];
+    },
+    [null!, Infinity, -1],
+  );
 
-const getAxes = (vertexes: Vector2D[]) => vertexes.map((v, i, arr) => rotate(substract(v, arr[last(arr.length, i)]!)));
+const getAxes = (vertexes: Vector2D[]) => vertexes.map((v, i, arr) => rotate(substract(v, lastElement(arr, i))));
 
 const projectVertexes = (absoluteVertexes: Vector2D[], axis: Vector2D): ProjectionRange => {
   const projections = absoluteVertexes.map((v) => projection(v, axis));

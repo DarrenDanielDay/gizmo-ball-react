@@ -1,6 +1,7 @@
+import { gravity } from "../constants/physics";
 import type { Vector2D } from "../physics/schema";
 import { circle, isoscelesRightTriangle, parallelogram, square } from "../physics/shape";
-import { vector } from "../physics/vector";
+import { substract, vector, zero } from "../physics/vector";
 import { BaseMapItem, BorderMapItem, MapItem, MapItemNames, MapItemStatus, Rotation } from "./schemas";
 
 const basicRay = (length: number) => vector(length, length);
@@ -36,10 +37,10 @@ export const createMapItem = (name: MapItemNames, center: Vector2D, length: numb
         ...basicProps,
         collider: circle(center, length / 2),
         massPoint: {
-          a: vector(0, 0),
+          a: gravity,
           m: 1,
           p: center,
-          v: vector(0, 0),
+          v: zero,
         },
       };
     case "absorber":
@@ -89,16 +90,12 @@ export const createMapItem = (name: MapItemNames, center: Vector2D, length: numb
         rotation: Rotation.Up,
       };
     case "baffle-alpha":
-      return {
-        name: "baffle-alpha",
-        ...basicProps,
-        collider: parallelogram(center, vector(length * 2, 0), vector(0, length / 4)),
-      };
     case "baffle-beta":
+      const colliderCenter = substract(center, vector(0, 3 * length / 8));
       return {
-        name: "baffle-beta",
+        name,
         ...basicProps,
-        collider: parallelogram(center, vector(length * 2, 0), vector(0, length / 4)),
+        collider: parallelogram(colliderCenter, vector(length * 2, 0), vector(0, length / 4)),
       };
     default:
       throw new Error(`Unknown map item name: ${name}`);

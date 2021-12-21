@@ -2,7 +2,7 @@ import React from "react";
 import { gridLength, ItemCollectionImageMap, OperationItemNames } from "../../core/constants/map-items";
 import { setDataToTransfer } from "../../core/map-items/data-transfer";
 import { createMapItem } from "../../core/map-items/factory";
-import { vector } from "../../core/physics/vector";
+import { zero } from "../../core/physics/vector";
 import styles from "./style.module.css";
 
 const itemOrders: [OperationItemNames, OperationItemNames][] = [
@@ -43,7 +43,7 @@ export const ItemCollection: React.FC<ItemCollectionProps> = ({ itemName, setIte
                         className={styles.img}
                         onDragStart={(e) => {
                           setDataToTransfer(e.dataTransfer, {
-                            item: createMapItem(name, vector(0, 0), gridLength),
+                            item: createMapItem(name, zero, gridLength),
                             from: "collection",
                           });
                         }}

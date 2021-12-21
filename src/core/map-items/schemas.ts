@@ -100,6 +100,12 @@ export type MapItem =
   | BaffleAlphaMapItem
   | BaffleBetaMapItem;
 
+export type Baffle = BaffleAlphaMapItem | BaffleBetaMapItem;
+
+export type MovingMapItem = Ball | Baffle;
+
+export type StaticMapItem = Exclude<MapItem, MovingMapItem>
+
 declare global {
   interface DataTransfer {
     getData(format: "application/gizmo.mapitem"): string;

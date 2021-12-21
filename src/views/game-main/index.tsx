@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import classNames from "classnames";
 import styles from "./style.module.css";
-import { GamePanel } from "../../components/game-panel";
+import { EditorGamePanel, PlayingGamePanel } from "../../components/game-panel";
 import { ItemCollection } from "../../components/item-collection";
 import { ToolCollection } from "../../components/tool-collection";
 import { Controls } from "../../components/controls";
-import { MapItem, MapItemStatus } from "../../core/map-items/schemas";
+import { Ball, MapItem, MapItemStatus, MovingMapItem } from "../../core/map-items/schemas";
 import type { Vector2D } from "../../core/physics/schema";
 import { gridLength, gridXCellCounts, gridYCellCounts, OperationItemNames } from "../../core/constants/map-items";
 import { add, multiply, substract, vector } from "../../core/physics/vector";
@@ -13,6 +13,8 @@ import { removeItemInArray, replaceItemInArray } from "../../core/physics/utils"
 import {
   canRotate,
   canZoom,
+  isMovable,
+  isStatic,
   rotateItem,
   zoomInReducer,
   zoomItem,
@@ -53,30 +55,39 @@ export const GameMainView: React.FC = () => {
   return (
     <div className={styles["game"]}>
       <div className={styles.border}>
-        <GamePanel
-          mapItems={mapItems}
-          onMapItemsChange={(items) => setMapItems(items)}
-          onClick={(offset) => {
-            itemName !== "select" &&
-              setMapItems((items) => [
-                ...items,
-                createMapItem(
-                  itemName,
-                  normalizeToCenter(offset, sizeOfMapItem(itemName, gridLength), gridLength),
-                  gridLength,
-                ),
-              ]);
-          }}
-          onDropItem={(data, offset) => {
-            const { item, from } = data;
-            setMapItems((items) => {
-              const center = normalizeToCenter(offset, item.size, gridLength);
-              // @ts-expect-error
-              const droppedItem: MapItem = { ...item, center, collider: { ...item.collider, center } };
-              return [...(from === "panel" && selected ? removeItemInArray(items, selected!) : items), droppedItem];
-            });
-          }}
-        />
+        {mode === Mode.Layout ? (
+          <EditorGamePanel
+            mapItems={mapItems}
+            onMapItemsChange={(items) => setMapItems(items)}
+            onClick={(offset) => {
+              itemName !== "select" &&
+                setMapItems((items) => [
+                  ...items,
+                  createMapItem(
+                    itemName,
+                    normalizeToCenter(offset, sizeOfMapItem(itemName, gridLength), gridLength),
+                    gridLength,
+                  ),
+                ]);
+            }}
+            onDropItem={(data, offset) => {
+              const { item, from } = data;
+              setMapItems((items) => {
+                const center = normalizeToCenter(offset, item.size, gridLength);
+                const delta = substract(center, item.center);
+                // @ts-expect-error
+                const droppedItem: MapItem = {
+                  ...item,
+                  center,
+                  collider: { ...item.collider, center: add(item.collider.center, delta) },
+                };
+                return [...(from === "panel" && selected ? removeItemInArray(items, selected!) : items), droppedItem];
+              });
+            }}
+          />
+        ) : (
+          <PlayingGamePanel paused={paused} movables={mapItems.filter(isMovable)} statics={mapItems.filter(isStatic)} />
+        )}
       </div>
       <div className={classNames(styles["right-side"], styles.border)}>
         <div className={classNames(styles["right-top"], styles.border)}>

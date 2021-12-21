@@ -10,6 +10,14 @@ export interface MassPoint {
   m: number;
 }
 
+export type PhysicalEffect = {
+  dp?: Vector2D;
+  dv?: Vector2D;
+  da?: Vector2D;
+}
+
+export type Effect = PhysicalEffect | ((effects: PhysicalEffect[]) => PhysicalEffect);
+
 interface BaseShape {
   center: Vector2D;
 }
@@ -21,7 +29,7 @@ export interface Circle extends BaseShape {
 export interface Polygon extends BaseShape {
   /**
    * Not absolute coordinates but offsets relative to center.
-   * 
+   *
    * The order of vertexes should be counterclockwise in right hand coordinate system.
    */
   vertexes: Vector2D[];
@@ -33,4 +41,3 @@ export interface Triangle extends Polygon {
 export interface Quadrilateral extends Polygon {
   vertexes: [Vector2D, Vector2D, Vector2D, Vector2D];
 }
-

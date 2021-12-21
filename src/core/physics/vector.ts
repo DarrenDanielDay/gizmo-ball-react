@@ -2,6 +2,8 @@ import type { Vector2D } from "./schema";
 
 export const vector = (x: number, y: number): Vector2D => ({ x, y });
 
+export const zero: Vector2D = Object.freeze(vector(0, 0));
+
 export const add = (a: Vector2D, b: Vector2D) => vector(a.x + b.x, a.y + b.y);
 
 export const substract = (a: Vector2D, b: Vector2D) => vector(a.x - b.x, a.y - b.y);
