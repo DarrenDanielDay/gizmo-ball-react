@@ -1,4 +1,4 @@
-import type { Vector2D, MassPoint, Quadrilateral, Triangle, Circle } from "../physics/schema";
+import type { Vector2D, MassPoint, Quadrilateral, Triangle, Circle, Polygon } from "../physics/schema";
 
 export type MapItemNames =
   | "absorber"
@@ -26,7 +26,7 @@ export enum MapItemStatus {
 export interface BaseMapItem {
   name: MapItemNames;
   center: Vector2D;
-  status: MapItemStatus
+  status: MapItemStatus;
   size: Vector2D;
 }
 
@@ -104,8 +104,9 @@ export type Baffle = BaffleAlphaMapItem | BaffleBetaMapItem;
 
 export type MovingMapItem = Ball | Baffle;
 
-export type StaticMapItem = Exclude<MapItem, MovingMapItem>
+export type StaticMapItem = Exclude<MapItem, MovingMapItem>;
 
+export type PolygonColliderMapItem = Extract<MapItem, { collider: Polygon }>;
 declare global {
   interface DataTransfer {
     getData(format: "application/gizmo.mapitem"): string;

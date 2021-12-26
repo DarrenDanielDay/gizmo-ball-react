@@ -1,13 +1,39 @@
-import { collides, isCircle, isPolygon } from "../physics/collider";
+import { rotationDirectionMap } from "../constants/map-items";
+import { isCircle, isPolygon } from "../physics/collider";
 import type { Vector2D } from "../physics/schema";
 import { nextElement } from "../physics/utils";
-import { add, multiply, rotate, substract } from "../physics/vector";
-import { MapItem, MapItemNames, MovingMapItem, Rotation, StaticMapItem, WithRotation, WithScale } from "./schemas";
+import { add, multiply, negate, rotate, rotateBackward, substract } from "../physics/vector";
+import {
+  MapItem,
+  MapItemNames,
+  MovingMapItem,
+  PipeMapItem,
+  PipeTurnedMapItem,
+  Rotation,
+  StaticMapItem,
+  WithRotation,
+  WithScale,
+} from "./schemas";
 
 export const canRotate = (item: MapItem): item is Extract<MapItem, WithRotation> =>
   typeof (item as WithRotation).rotation === "number";
 
 const rotations = [Rotation.Up, Rotation.Right, Rotation.Down, Rotation.Left];
+
+export const rotateAs = (v: Vector2D, rotation: Rotation): Vector2D => {
+  switch (rotation) {
+    case Rotation.Up:
+      return v;
+    case Rotation.Right:
+      return rotate(v);
+    case Rotation.Down:
+      return negate(v);
+    case Rotation.Left:
+      return rotateBackward(v);
+    default:
+      throw new Error("Unknown rotation");
+  }
+};
 
 export const rotateItem = <T extends Extract<MapItem, WithRotation>>(item: T): T => {
   const { collider, rotation } = item;
@@ -53,3 +79,38 @@ const movableNames: MapItemNames[] = ["ball", "baffle-alpha", "baffle-beta"];
 
 export const isMovable = (item: MapItem): item is MovingMapItem => movableNames.some((name) => name === item.name);
 export const isStatic = (item: MapItem): item is StaticMapItem => !isMovable(item);
+
+export const moveMapItem = (item: MapItem, newCenter: Vector2D): MapItem => {
+  if (item.name === "ball") {
+    return {
+      ...item,
+      center: newCenter,
+      collider: {
+        ...item.collider,
+        center: newCenter,
+      },
+      massPoint: {
+        ...item.massPoint,
+        p: newCenter,
+      },
+    };
+  }
+  const delta = substract(newCenter, item.center);
+  // @ts-expect-error
+  return {
+    ...item,
+    center: newCenter,
+    collider: { ...item.collider, center: add(item.collider.center, delta) },
+  };
+};
+
+export const pipeOutlets = (pipe: PipeMapItem): [Vector2D, Vector2D] => [
+  rotationDirectionMap[pipe.rotation],
+  negate(rotationDirectionMap[pipe.rotation]),
+];
+
+export const pipeTurnedOutlets = (pipeTurned: PipeTurnedMapItem): [Vector2D, Vector2D] => {
+  const possible1 = rotate(rotationDirectionMap[pipeTurned.rotation]);
+  const possible2 = rotate(possible1);
+  return [possible1, possible2];
+}

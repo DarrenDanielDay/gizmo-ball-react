@@ -1,9 +1,17 @@
 import React, { useEffect, useRef, useState } from "react";
 import { itemUpdateInterval, moveApplyInterval, moveStep, refreshInterval } from "../../core/constants/play-mode";
-import { reduceNextTick } from "../../core/controller/play-mode";
-import { BaffleKey } from "../../core/controller/schema";
+import { preCompute, reduceNextTickWithPrecomputed } from "../../core/controller/play-mode";
+import { BaffleKey, ComputedPolygonData } from "../../core/controller/schema";
 import { getDataFromTransfer, MapItemTransferData } from "../../core/map-items/data-transfer";
-import { Baffle, MapItem, MapItemStatus, MovingMapItem, StaticMapItem } from "../../core/map-items/schemas";
+import {
+  Baffle,
+  Ball,
+  MapItem,
+  MapItemStatus,
+  MovingMapItem,
+  PolygonColliderMapItem,
+  StaticMapItem,
+} from "../../core/map-items/schemas";
 import { hasAnyCollision } from "../../core/physics/collider";
 import type { Vector2D } from "../../core/physics/schema";
 import { replaceItemInArray } from "../../core/physics/utils";
@@ -83,12 +91,21 @@ export const PlayingGamePanel: React.FC<IPlayingGamePanelProp> = ({ statics, mov
   const [movables, setMovables] = useState<MovingMapItem[]>(initMovables);
   useEffect(() => {
     if (!paused) {
-      let currentMovables = movables;
+      let currentBalls = movables.filter((movable): movable is Ball => movable.name === "ball");
+      let currentBaffles = movables.filter(
+        (movable): movable is Baffle => movable.name === "baffle-alpha" || movable.name === "baffle-beta",
+      );
+      const preComputed = statics.reduce((acc, item) => {
+        if (item.name !== "circle") {
+          acc.set(item, preCompute(item.collider));
+        }
+        return acc;
+      }, new Map<PolygonColliderMapItem, ComputedPolygonData>());
       const itemTimer = setInterval(() => {
-        currentMovables = reduceNextTick(currentMovables, statics);
+        currentBalls = reduceNextTickWithPrecomputed(currentBalls, currentBaffles, statics, preComputed);
       }, itemUpdateInterval);
       const refreshTimer = setInterval(() => {
-        setMovables(currentMovables);
+        setMovables([...currentBalls, ...currentBaffles]);
       }, refreshInterval);
       const keyStatus: Record<BaffleKey, boolean> = {
         [BaffleKey.AlphaLeft]: false,
@@ -113,7 +130,7 @@ export const PlayingGamePanel: React.FC<IPlayingGamePanelProp> = ({ statics, mov
         const { center, collider } = baffle;
         const moveOffset = multiply(vector(moveStep, 0), +r - +l);
         const movedBaffleCenter = add(center, moveOffset);
-        const movedColliderCenter = add (collider.center, moveOffset);
+        const movedColliderCenter = add(collider.center, moveOffset);
         return {
           ...baffle,
           center: movedBaffleCenter,
@@ -131,11 +148,14 @@ export const PlayingGamePanel: React.FC<IPlayingGamePanelProp> = ({ statics, mov
         ];
         for (const [left, right, name] of combinations) {
           if (left !== right) {
-            const newMovables = currentMovables.map((item) =>
+            const newBaffles = currentBaffles.map((item) =>
               item.name === name ? movedBaffle(item, left, right) : item,
             );
-            if (!hasAnyCollision([...newMovables, ...statics].map((item) => item.collider))) {
-              currentMovables = newMovables;
+            if (
+              !hasAnyCollision([...newBaffles, ...statics].map((item) => item.collider)) &&
+              !hasAnyCollision([...newBaffles, ...currentBalls].map((item) => item.collider))
+            ) {
+              currentBaffles = newBaffles;
             }
           }
         }

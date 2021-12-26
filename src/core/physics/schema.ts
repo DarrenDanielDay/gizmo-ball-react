@@ -10,13 +10,17 @@ export interface MassPoint {
   m: number;
 }
 
-export type PhysicalEffect = {
-  dp?: Vector2D;
-  dv?: Vector2D;
-  da?: Vector2D;
+export interface PhysicalEffect {
+  dp: Vector2D;
+  dv: Vector2D;
+  da: Vector2D;
 }
 
-export type Effect = PhysicalEffect | ((effects: PhysicalEffect[]) => PhysicalEffect);
+export type FinalPhysicalEffect = Required<PhysicalEffect>;
+
+export type FunctionalEffect = (effect: FinalPhysicalEffect) => FinalPhysicalEffect;
+
+export type Effect = PhysicalEffect | FunctionalEffect;
 
 interface BaseShape {
   center: Vector2D;
@@ -41,3 +45,4 @@ export interface Triangle extends Polygon {
 export interface Quadrilateral extends Polygon {
   vertexes: [Vector2D, Vector2D, Vector2D, Vector2D];
 }
+

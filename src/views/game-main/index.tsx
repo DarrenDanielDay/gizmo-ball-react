@@ -5,7 +5,7 @@ import { EditorGamePanel, PlayingGamePanel } from "../../components/game-panel";
 import { ItemCollection } from "../../components/item-collection";
 import { ToolCollection } from "../../components/tool-collection";
 import { Controls } from "../../components/controls";
-import { Ball, MapItem, MapItemStatus, MovingMapItem } from "../../core/map-items/schemas";
+import { MapItem, MapItemStatus } from "../../core/map-items/schemas";
 import type { Vector2D } from "../../core/physics/schema";
 import { gridLength, gridXCellCounts, gridYCellCounts, OperationItemNames } from "../../core/constants/map-items";
 import { add, multiply, substract, vector } from "../../core/physics/vector";
@@ -15,6 +15,7 @@ import {
   canZoom,
   isMovable,
   isStatic,
+  moveMapItem,
   rotateItem,
   zoomInReducer,
   zoomItem,
@@ -74,19 +75,17 @@ export const GameMainView: React.FC = () => {
               const { item, from } = data;
               setMapItems((items) => {
                 const center = normalizeToCenter(offset, item.size, gridLength);
-                const delta = substract(center, item.center);
-                // @ts-expect-error
-                const droppedItem: MapItem = {
-                  ...item,
-                  center,
-                  collider: { ...item.collider, center: add(item.collider.center, delta) },
-                };
+                const droppedItem = moveMapItem(item, center);
                 return [...(from === "panel" && selected ? removeItemInArray(items, selected!) : items), droppedItem];
               });
             }}
           />
         ) : (
-          <PlayingGamePanel paused={paused} movables={mapItems.filter(isMovable)} statics={mapItems.filter(isStatic)} />
+          <PlayingGamePanel
+            paused={paused}
+            movables={mapItems.filter(isMovable).map((item) => ({ ...item, status: MapItemStatus.Normal }))}
+            statics={mapItems.filter(isStatic).map((item) => ({ ...item, status: MapItemStatus.Normal }))}
+          />
         )}
       </div>
       <div className={classNames(styles["right-side"], styles.border)}>

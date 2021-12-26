@@ -1,12 +1,14 @@
+import { zero } from "./vector";
+
 export type ProjectionRange = [number, number];
 
-const last = (length: number, index: number) => (index - 1 + length) % length;
+export const lastIndex = (length: number, index: number) => (index - 1 + length) % length;
 
-export const lastElement = <T>(array: T[], index: number) => array[last(array.length, index)]!;
+export const lastElement = <T>(array: T[], index: number) => array[lastIndex(array.length, index)]!;
 
-const next = (length: number, index: number) => (index + 1) % length;
+export const nextIndex = (length: number, index: number) => (index + 1) % length;
 
-export const nextElement = <T>(array: T[], index: number) => array[next(array.length, index)]!;
+export const nextElement = <T>(array: T[], index: number) => array[nextIndex(array.length, index)]!;
 
 export const hasOverlap = (p1: ProjectionRange, p2: ProjectionRange) => p1[1] > p2[0] && p2[1] > p1[0];
 
@@ -16,3 +18,5 @@ export const replaceItemInArray = <T>(array: T[], oldItem: T, newItem: T): T[] =
 };
 
 export const removeItemInArray = <T>(array: T[], target: T): T[] => array.filter(item => item !== target)
+
+export const zeroEffect = { da: zero, dp: zero, dv: zero };

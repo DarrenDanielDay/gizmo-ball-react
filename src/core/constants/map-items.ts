@@ -8,7 +8,9 @@ import square from "../../img/square.png";
 import triangle from "../../img/triangle.png";
 import baffle from "../../img/baffle.png";
 import baffleMid from "../../img/baffle-mid.png";
-import type { MapItemNames } from "../map-items/schemas";
+import { MapItemNames, Rotation } from "../map-items/schemas";
+import type { Vector2D } from "../physics/schema";
+import { negate, xElement, yElement } from "../physics/vector";
 
 export type OperationItemNames = 'select' | MapItemNames
 
@@ -43,6 +45,18 @@ export const gridLength = 36;
 export const gridXCellCounts = 20;
 
 export const gridYCellCounts = 20;
+
+export const rotationDirectionMap: Record<Rotation, Vector2D> = {
+  [Rotation.Up]: negate(yElement),
+  [Rotation.Right]: xElement,
+  [Rotation.Down]: yElement,
+  [Rotation.Left]: negate(xElement),
+};
+
+
+export const pipeEntryAcceptProjection = 10;
+
+export const pipeTurnAcceptProjection = 5;
 
 // For debug
 // @ts-ignore
