@@ -1,3 +1,36 @@
+.tooltip-host {
+  position: relative;
+  display: inline-block;
+}
+.tooltip-host:hover .tooltip {
+  visibility: visible;
+}
+.tooltip-host:hover .tooltip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  transform: translateY(-2px) rotateZ(45deg);
+  background-color: darkgray;
+  box-shadow: 2px 2px 2px gray;
+}
+.tooltip-host .tooltip {
+  visibility: hidden;
+  background-color: darkgray;
+  box-shadow: 2px 2px 2px gray;
+  width: 40px;
+  height: 2em;
+  border-radius: 0.5em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 20%;
+  top: -50%;
+}
+
 .tool {
   margin: 5px;
   width: 50px;

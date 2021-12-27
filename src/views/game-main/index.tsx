@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import classNames from "classnames";
 import styles from "./style.module.css";
 import { EditorGamePanel, PlayingGamePanel } from "../../components/game-panel";
@@ -99,6 +99,32 @@ export const GameMainView: React.FC = () => {
       selected && canZoom(selected) ? replaceItemInArray(items, selected, zoomItem(selected, zoomOutReducer)) : items,
     );
   }, [selected]);
+  useEffect(() => {
+    if (isEditing) {
+      const handler = (e: KeyboardEvent): void => {
+        const action = e.key.toLocaleLowerCase();
+        switch (action) {
+          case 'delete':
+            handleRemoveItem();
+            break;
+          case 'r':
+            handleRotateItem();
+            break;
+          case '=':
+            handleZoomInItem();
+            break;
+          case '-':
+            handleZoomOutItem();
+            break;
+        }
+      };
+      window.addEventListener("keydown", handler);
+      return () => {
+        window.removeEventListener("keydown", handler);
+      };
+    }
+    return;
+  }, [isEditing, selected]);
   return (
     <div className={styles["game"]}>
       <div className={styles.border}>

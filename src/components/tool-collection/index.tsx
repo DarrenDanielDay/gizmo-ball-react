@@ -12,12 +12,7 @@ export interface ToolCollectionProps {
   onZoomOut?: () => void;
 }
 
-export const ToolCollection: React.FC<ToolCollectionProps> = ({
-  onRotate,
-  onRemove,
-  onZoomIn,
-  onZoomOut
-}) => {
+export const ToolCollection: React.FC<ToolCollectionProps> = ({ onRotate, onRemove, onZoomIn, onZoomOut }) => {
   return (
     <div>
       <span>Tool Collection</span>
@@ -25,22 +20,41 @@ export const ToolCollection: React.FC<ToolCollectionProps> = ({
         <tbody>
           <tr>
             <td>
-              <img className={styles.tool} src={rotate} onClick={onRotate} />
+              <Tooltip hotkey="R">
+                <img className={styles.tool} src={rotate} onClick={onRotate} />
+              </Tooltip>
             </td>
             <td>
-              <img className={styles.tool} src={remove} onClick={onRemove} />
+              <Tooltip hotkey="Del">
+                <img className={styles.tool} src={remove} onClick={onRemove} />
+              </Tooltip>
             </td>
           </tr>
           <tr>
             <td>
-              <img className={styles.tool} src={zoomIn} onClick={onZoomIn} />
+              <Tooltip hotkey="=">
+                <img className={styles.tool} src={zoomIn} onClick={onZoomIn} />
+              </Tooltip>
             </td>
             <td>
-              <img className={styles.tool} src={zoomOut} onClick={onZoomOut} />
+              <Tooltip hotkey="-">
+                <img className={styles.tool} src={zoomOut} onClick={onZoomOut} />
+              </Tooltip>
             </td>
           </tr>
         </tbody>
       </table>
+    </div>
+  );
+};
+
+const Tooltip: React.FC<{ hotkey: React.ReactNode }> = ({ children, hotkey }) => {
+  return (
+    <div className={styles["tooltip-host"]}>
+      <div className={styles.tooltip}>
+        <kbd>{hotkey}</kbd>
+      </div>
+      {children}
     </div>
   );
 };
