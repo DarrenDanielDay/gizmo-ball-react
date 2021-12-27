@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { itemUpdateInterval, moveApplyInterval, moveStep, refreshInterval } from "../../core/constants/play-mode";
 import { preCompute, reduceNextTickWithPrecomputed } from "../../core/controller/play-mode";
 import { BaffleKey, ComputedPolygonData } from "../../core/controller/schema";
@@ -26,35 +26,38 @@ export interface GamePanelProps {
   onClick?: (offset: Vector2D) => void;
 }
 
+const preventDragOverEvent = (e: React.DragEvent<HTMLDivElement>): void => e.preventDefault();
 export const EditorGamePanel: React.FC<GamePanelProps> = ({ mapItems, onMapItemsChange, onDropItem, onClick }) => {
   const panelContainerRef = useRef<HTMLDivElement>(null);
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>): void => {
+    const data = getDataFromTransfer(e.dataTransfer);
+    const panelEl = panelContainerRef.current;
+    if (!data || !panelEl) {
+      return;
+    }
+    const panelOffset = vector(panelEl.offsetLeft, panelEl.offsetTop);
+    const absolutePickedCenter = add(data.item.center, panelOffset);
+    const { pickedUpPosition = absolutePickedCenter } = data;
+    const cursorCenterOffset = substract(pickedUpPosition, absolutePickedCenter);
+    const absoluteDropPosition = vector(e.pageX, e.pageY);
+    const droppedOffset = substract(absoluteDropPosition, panelOffset);
+    onDropItem?.(data, substract(droppedOffset, cursorCenterOffset));
+  }, [onDropItem]);
+  const handlePanelClick = useCallback((e: React.MouseEvent<HTMLDivElement, MouseEvent>): void => {
+    const panelEl = panelContainerRef.current!;
+    const panelOffset = vector(panelEl.offsetLeft, panelEl.offsetTop);
+    const clickedAbsolutePosition = vector(e.pageX, e.pageY);
+    const clickedOffset = substract(clickedAbsolutePosition, panelOffset);
+    onClick?.(clickedOffset);
+  }, [onClick]);
   return (
     <div className={styles["game-panel"]}>
       <div
         ref={panelContainerRef}
         className={styles["game-grid"]}
-        onDragOver={(e) => e.preventDefault()}
-        onDrop={(e) => {
-          const data = getDataFromTransfer(e.dataTransfer);
-          const panelEl = panelContainerRef.current;
-          if (!data || !panelEl) {
-            return;
-          }
-          const panelOffset = vector(panelEl.offsetLeft, panelEl.offsetTop);
-          const absolutePickedCenter = add(data.item.center, panelOffset);
-          const { pickedUpPosition = absolutePickedCenter } = data;
-          const cursorCenterOffset = substract(pickedUpPosition, absolutePickedCenter);
-          const absoluteDropPosition = vector(e.pageX, e.pageY);
-          const droppedOffset = substract(absoluteDropPosition, panelOffset);
-          onDropItem?.(data, substract(droppedOffset, cursorCenterOffset));
-        }}
-        onClick={(e) => {
-          const panelEl = panelContainerRef.current!;
-          const panelOffset = vector(panelEl.offsetLeft, panelEl.offsetTop);
-          const clickedAbsolutePosition = vector(e.pageX, e.pageY);
-          const clickedOffset = substract(clickedAbsolutePosition, panelOffset);
-          onClick?.(clickedOffset);
-        }}
+        onDragOver={preventDragOverEvent}
+        onDrop={handleDrop}
+        onClick={handlePanelClick}
       >
         {mapItems.map((item, i) => (
           <MapItemComponent

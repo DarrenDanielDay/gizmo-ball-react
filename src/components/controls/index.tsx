@@ -8,7 +8,7 @@ import styles from "./style.module.css";
 export interface ControlsProps {
   mode: Mode;
   paused: boolean;
-  setPaused?: React.Dispatch<React.SetStateAction<boolean>>;
+  togglePaused?: React.DispatchWithoutAction;
   handleLayoutMode?: () => void;
   handlePlayMode?: () => void;
 }
@@ -18,7 +18,7 @@ export const Controls: React.FC<ControlsProps> = ({
   paused,
   handleLayoutMode,
   handlePlayMode,
-  setPaused
+  togglePaused
 }) => {
   
   const isPlaying = mode === Mode.Play;
@@ -52,9 +52,7 @@ export const Controls: React.FC<ControlsProps> = ({
                   className={styles["controll-img"]}
                   height="30"
                   src={paused ? resume : pause}
-                  onClick={() => {
-                    setPaused?.((p) => !p);
-                  }}
+                  onClick={togglePaused}
                 />
               )}
             </td>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import classNames from "classnames";
 import styles from "./style.module.css";
 import { EditorGamePanel, PlayingGamePanel } from "../../components/game-panel";
@@ -24,6 +24,7 @@ import {
 import { hasAnyCollision } from "../../core/physics/collider";
 import { Mode } from "../../core/controller/schema";
 import { createBorder, createMapItem, sizeOfMapItem } from "../../core/map-items/factory";
+import type { MapItemTransferData } from "../../core/map-items/data-transfer";
 
 const normalizeToCenter = (pointer: Vector2D, size: Vector2D, length: number) => {
   const offset = multiply(size, 0.5);
@@ -45,40 +46,68 @@ export const GameMainView: React.FC = () => {
     });
   const selected = mapItems.find((item) => item.status === MapItemStatus.Selected);
   const [mode, setMode] = useState(Mode.Layout);
+  const isEditing = mode === Mode.Layout;
   const [paused, setPaused] = useState(false);
-  const handleLayoutMode = () => {
+  const togglePaused = useCallback(() => setPaused((p) => !p), []);
+  const handleLayoutMode = useCallback(() => {
     setMode(Mode.Layout);
     setPaused(false);
-  };
-  const handlePlayMode = () => {
+  }, []);
+  const handlePlayMode = useCallback(() => {
     setMode(Mode.Play);
-  };
+  }, []);
+  const handleGridClick = useCallback(
+    (offset: Vector2D) => {
+      itemName !== "select" &&
+        setMapItems((items) => [
+          ...items,
+          createMapItem(
+            itemName,
+            normalizeToCenter(offset, sizeOfMapItem(itemName, gridLength), gridLength),
+            gridLength,
+          ),
+        ]);
+    },
+    [itemName],
+  );
+  const handleDropItem = useCallback(
+    (data: MapItemTransferData, offset: Vector2D): void => {
+      const { item, from } = data;
+      setMapItems((items) => {
+        const center = normalizeToCenter(offset, item.size, gridLength);
+        const droppedItem = moveMapItem(item, center);
+        return [...(from === "panel" && selected ? removeItemInArray(items, selected) : items), droppedItem];
+      });
+    },
+    [selected],
+  );
+  const handleRotateItem = useCallback(() => {
+    setMapItems((items) =>
+      selected && canRotate(selected) ? replaceItemInArray(items, selected, rotateItem(selected)) : items,
+    );
+  }, [selected]);
+  const handleRemoveItem = useCallback(() => {
+    setMapItems((items) => (selected ? removeItemInArray(items, selected) : items));
+  }, [selected]);
+  const handleZoomInItem = useCallback(() => {
+    setMapItems((items) =>
+      selected && canZoom(selected) ? replaceItemInArray(items, selected, zoomItem(selected, zoomInReducer)) : items,
+    );
+  }, [selected]);
+  const handleZoomOutItem = useCallback(() => {
+    setMapItems((items) =>
+      selected && canZoom(selected) ? replaceItemInArray(items, selected, zoomItem(selected, zoomOutReducer)) : items,
+    );
+  }, [selected]);
   return (
     <div className={styles["game"]}>
       <div className={styles.border}>
-        {mode === Mode.Layout ? (
+        {isEditing ? (
           <EditorGamePanel
             mapItems={mapItems}
-            onMapItemsChange={(items) => setMapItems(items)}
-            onClick={(offset) => {
-              itemName !== "select" &&
-                setMapItems((items) => [
-                  ...items,
-                  createMapItem(
-                    itemName,
-                    normalizeToCenter(offset, sizeOfMapItem(itemName, gridLength), gridLength),
-                    gridLength,
-                  ),
-                ]);
-            }}
-            onDropItem={(data, offset) => {
-              const { item, from } = data;
-              setMapItems((items) => {
-                const center = normalizeToCenter(offset, item.size, gridLength);
-                const droppedItem = moveMapItem(item, center);
-                return [...(from === "panel" && selected ? removeItemInArray(items, selected!) : items), droppedItem];
-              });
-            }}
+            onMapItemsChange={setMapItems}
+            onClick={handleGridClick}
+            onDropItem={handleDropItem}
           />
         ) : (
           <PlayingGamePanel
@@ -94,35 +123,17 @@ export const GameMainView: React.FC = () => {
         </div>
         <div className={classNames(styles["right-middle"], styles.border)}>
           <ToolCollection
-            onRotate={() => {
-              setMapItems((items) =>
-                selected && canRotate(selected) ? replaceItemInArray(items, selected, rotateItem(selected)) : items,
-              );
-            }}
-            onRemove={() => {
-              setMapItems((items) => (selected ? removeItemInArray(items, selected) : items));
-            }}
-            onZoomIn={() => {
-              setMapItems((items) =>
-                selected && canZoom(selected)
-                  ? replaceItemInArray(items, selected, zoomItem(selected, zoomInReducer))
-                  : items,
-              );
-            }}
-            onZoomOut={() => {
-              setMapItems((items) =>
-                selected && canZoom(selected)
-                  ? replaceItemInArray(items, selected, zoomItem(selected, zoomOutReducer))
-                  : items,
-              );
-            }}
+            onRotate={handleRotateItem}
+            onRemove={handleRemoveItem}
+            onZoomIn={handleZoomInItem}
+            onZoomOut={handleZoomOutItem}
           />
         </div>
         <div className={classNames(styles["right-bottom"], styles.border)}>
           <Controls
             mode={mode}
             paused={paused}
-            setPaused={setPaused}
+            togglePaused={togglePaused}
             handleLayoutMode={handleLayoutMode}
             handlePlayMode={handlePlayMode}
           />
