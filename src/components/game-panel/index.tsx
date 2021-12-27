@@ -168,6 +168,7 @@ export const PlayingGamePanel: React.FC<IPlayingGamePanelProp> = ({ statics, mov
         window.removeEventListener("keyup", handleKeyUp);
       };
     }
+    return;
   }, [paused]);
   return (
     <div className={styles["game-panel"]}>

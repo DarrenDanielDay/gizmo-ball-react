@@ -110,7 +110,7 @@ export const createBorder = (length: number, xCellCount: number, yCellCount: num
     [0, 1, 1, 0],
     [1, 0, 0, 1],
     [0, 1, -1, 0],
-  ];
+  ] as const;
   const result: BorderMapItem[] = [];
   for (const [bx, by, sx, sy] of urdl) {
     const center = vector(

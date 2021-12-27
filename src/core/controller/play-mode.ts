@@ -55,7 +55,7 @@ export const preCompute = (polygon: Polygon): ComputedPolygonData => {
   const edges = polygon.vertexes.map((vertex, i, arr) => substract(vertex, nextElement(arr, i)));
   const middles = absoluteVertexes.map((vertex, i, arr) => average(vertex, nextElement(arr, i)));
   const axes = edges.map((edge) => rotate(edge));
-  const pointProjections = absoluteVertexes.map((absoluteVertex, i) => projection(absoluteVertex, axes[i]));
+  const pointProjections = absoluteVertexes.map((absoluteVertex, i) => projection(absoluteVertex, axes[i]!));
   return {
     absoluteVertexes,
     edges,
@@ -72,7 +72,7 @@ export const reduceNextTickWithPrecomputed = (
   preComputed: Map<PolygonColliderMapItem, ComputedPolygonData>,
 ): Ball[] => {
   const kinematicalEffects = oldBalls.map((ball) => kinematicalEffect(ball.massPoint));
-  const newBalls = oldBalls.map((ball, i) => reduceBallsWithEffect(ball, kinematicalEffects[i]));
+  const newBalls = oldBalls.map((ball, i) => reduceBallsWithEffect(ball, kinematicalEffects[i]!));
   const polygonData = new Map(preComputed.entries());
   for (const baffle of baffles) {
     polygonData.set(baffle, preCompute(baffle.collider));
@@ -99,7 +99,7 @@ export const reduceNextTickWithPrecomputed = (
         const { center: circleCenter, radius: circleRadius } = notBallItem.collider;
         const axis = substract(center, circleCenter);
         if (norm(axis) < circleRadius + radius) {
-          collisions[i].arc.push({
+          collisions[i]!.arc.push({
             type: "arc",
             item: notBallItem,
             axis,
@@ -118,11 +118,11 @@ export const reduceNextTickWithPrecomputed = (
       for (const [p1i, p2i] of [
         [otherIndex, index],
         [index, restIndex],
-      ]) {
-        const p1p = substract(center, absoluteVertexes[p1i]);
-        const p2p = substract(center, absoluteVertexes[p2i]);
-        const edge = edges[p1i];
-        const axis = axes[p1i];
+      ] as const) {
+        const p1p = substract(center, absoluteVertexes[p1i]!);
+        const p2p = substract(center, absoluteVertexes[p2i]!);
+        const edge = edges[p1i]!;
+        const axis = axes[p1i]!;
         if (dot(p1p, axis) <= 0) {
           innerCount++;
           // Skip if the center is not on the outside of the edge.
@@ -131,14 +131,14 @@ export const reduceNextTickWithPrecomputed = (
         if (
           dot(p1p, edge) < 0 &&
           0 < dot(p2p, edge) &&
-          radius > Math.abs(pointProjections[p1i] - projection(center, axis))
+          radius > Math.abs(pointProjections[p1i]! - projection(center, axis))
         ) {
           if (notBallItem.name === "absorber") {
             absorbed[i] = true;
             continue ForNotBallItem;
           } else if (notBallItem.name === "pipe") {
             if (isParallel(axis, rotationDirectionMap[notBallItem.rotation])) {
-              collisions[i].entry.push({
+              collisions[i]!.entry.push({
                 type: "entry",
                 index: p1i,
                 item: notBallItem,
@@ -149,7 +149,7 @@ export const reduceNextTickWithPrecomputed = (
           } else if (notBallItem.name === "pipe-turned") {
             // TODO pre compute
             if (pipeTurnedOutlets(notBallItem).some((pointer) => isSameDirection(pointer, axis))) {
-              collisions[i].entry.push({
+              collisions[i]!.entry.push({
                 type: "entry",
                 index: p1i,
                 item: notBallItem,
@@ -158,11 +158,11 @@ export const reduceNextTickWithPrecomputed = (
               continue ForNotBallItem;
             }
           }
-          collisions[i].edge.push({
+          collisions[i]!.edge.push({
             type: "edge",
             item: notBallItem,
             index: p1i,
-            point: absoluteVertexes[p1i],
+            point: absoluteVertexes[p1i]!,
           });
           // If the ball collides on the edge of polygon, then point collision is not considered.
           continue ForNotBallItem;
@@ -170,7 +170,7 @@ export const reduceNextTickWithPrecomputed = (
       }
       if (innerCount === 2 && (notBallItem.name === "pipe" || notBallItem.name === "pipe-turned")) {
         // Collide in pipe
-        collisions[i].inner.push({
+        collisions[i]!.inner.push({
           type: "inner",
           item: notBallItem,
         });
@@ -181,10 +181,10 @@ export const reduceNextTickWithPrecomputed = (
         if (notBallItem.name === "absorber") {
           absorbed[i] = true;
         } else {
-          collisions[i].point.push({
+          collisions[i]!.point.push({
             type: "point",
             item: notBallItem,
-            point: absoluteVertexes[index],
+            point: absoluteVertexes[index]!,
             index,
           });
         }
@@ -193,14 +193,14 @@ export const reduceNextTickWithPrecomputed = (
     }
     // For balls:
     for (let j = i + 1; j < newBalls.length; j++) {
-      const otherBall = newBalls[j];
+      const otherBall = newBalls[j]!;
       const { collider: otherCollider } = otherBall;
       const { center: otherCenter, radius: otherRadius } = otherCollider;
       if (distance(center, otherCenter) < radius + otherRadius) {
         // Collision between balls should be tracked only once.
-        collisions[i].ball.push({
+        collisions[i]!.ball.push({
           type: "ball",
-          item: oldBalls[j],
+          item: oldBalls[j]!,
           axis: substract(center, otherCenter),
           index: j,
         });
@@ -211,15 +211,15 @@ export const reduceNextTickWithPrecomputed = (
   const finalBalls = newBalls.slice();
   // Second, handle ball - ball collisions
   for (let i = 0; i < finalBalls.length; i++) {
-    const currentBall = finalBalls[i];
-    const bcs = collisions[i].ball;
+    const currentBall = finalBalls[i]!;
+    const bcs = collisions[i]!.ball;
     for (const bc of bcs) {
       const { index } = bc;
-      if (collisions[i].inner.length !== collisions[index].inner.length) {
+      if (collisions[i]!.inner.length !== collisions[index]!.inner.length) {
         // If the balls are not both in pipe or outside of pipe, ignore the collision.
         continue;
       }
-      const otherBall = finalBalls[index];
+      const otherBall = finalBalls[index]!;
       const [e1, e2] = perfectElasticCollisionEffect(currentBall.massPoint, otherBall.massPoint);
       finalBalls[i] = reduceBallsWithEffect(currentBall, e1);
       finalBalls[index] = reduceBallsWithEffect(otherBall, e2);
@@ -227,10 +227,10 @@ export const reduceNextTickWithPrecomputed = (
   }
   // Third, compute reflection collision axes.
   const pendingReflectAxes = finalBalls.map((currentBall, i) => {
-    const { arc: acs, edge: ecs, point: pcs } = collisions[i];
+    const { arc: acs, edge: ecs, point: pcs } = collisions[i]!;
     return [
       ...acs.map((ac) => ac.axis),
-      ...ecs.map((ec) => polygonData.get(ec.item)!.axes[ec.index]),
+      ...ecs.map((ec) => polygonData.get(ec.item)!.axes[ec.index]!),
       ...pcs.reduce<Vector2D[]>((acc, pc) => {
         if (ecs.every((ec) => !isEqual(ec.point, pc.point))) {
           acc.push(substract(currentBall.center, pc.point));
@@ -241,9 +241,9 @@ export const reduceNextTickWithPrecomputed = (
   });
   // Finally, handle pipe entry / pipe inner normalization and handle reflection
   for (let i = 0; i < finalBalls.length; i++) {
-    const currentBall = finalBalls[i];
-    const { entry, inner } = collisions[i];
-    const pendingReflectAxis = pendingReflectAxes[i];
+    const currentBall = finalBalls[i]!;
+    const { entry, inner } = collisions[i]!;
+    const pendingReflectAxis = pendingReflectAxes[i]!;
     const { massPoint } = currentBall;
     const { v } = massPoint;
     if (entry.length) {
@@ -252,11 +252,11 @@ export const reduceNextTickWithPrecomputed = (
           console.error("invalid entry collisions:", entry);
         }
       }
-      const e = entry[0];
+      const e = entry[0]!;
       const { middles, edges } = polygonData.get(e.item)!;
       const middle = middles[e.index]!;
       const positionDelta = substract(middle, currentBall.center);
-      const edgeDirection = edges[i];
+      const edgeDirection = edges[i]!;
       if (Math.abs(projection(positionDelta, edgeDirection)) < pipeEntryAcceptProjection && dot(e.axis, v) < 0) {
         const changeToMoveIntoAxis = projectionComponent(positionDelta, edgeDirection);
         // v^2 - v0^2 = 2gh
@@ -283,7 +283,7 @@ export const reduceNextTickWithPrecomputed = (
           console.error("invalid inner collision:", inner);
         }
       }
-      const inn = inner[0];
+      const inn = inner[0]!;
       const { item } = inn;
       const positionDelta = substract(item.center, currentBall.center);
       if (item.name === "pipe") {
@@ -329,7 +329,7 @@ export const reduceNextTickWithPrecomputed = (
       }
     }
     finalBalls[i] = reduceBallsWithEffect(
-      finalBalls[i],
+      finalBalls[i]!,
       pendingReflectAxis.length
         ? surfaceReflectEffect(currentBall.massPoint, average(...pendingReflectAxis))
         : zeroEffect,

@@ -17,6 +17,10 @@ export const replaceItemInArray = <T>(array: T[], oldItem: T, newItem: T): T[] =
   return [...array.slice(0, index), newItem, ...array.slice(index + 1)];
 };
 
-export const removeItemInArray = <T>(array: T[], target: T): T[] => array.filter(item => item !== target)
+export const removeItemInArray = <T>(array: T[], target: T): T[] => array.filter((item) => item !== target);
 
 export const zeroEffect = { da: zero, dp: zero, dv: zero };
+
+export const die = (message?: string): never => {
+  throw new Error(message);
+};

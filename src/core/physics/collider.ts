@@ -1,6 +1,6 @@
 import type { MapItem } from "../map-items/schemas";
 import type { Circle, Polygon, Vector2D } from "./schema";
-import { hasOverlap, lastElement, ProjectionRange } from "./utils";
+import { die, hasOverlap, lastElement, ProjectionRange } from "./utils";
 import { add, distance, dot, isZero, norm, projection, rotate, substract } from "./vector";
 
 export const polygonCollidesWithPolygon = (polygon1: Polygon, polygon2: Polygon): boolean => {
@@ -71,12 +71,13 @@ export const collides = (a: Collider, b: Collider) => {
   if (aIsPolygon && bIsCircle) {
     return polygonCollidesWithCircle(a, b);
   }
+  return die('Unknown collider combination.')
 };
 
 export const hasAnyCollision = (colliders: Collider[]) =>
   colliders.some((a, i) => {
     for (let j = i + 1; j < colliders.length; j++) {
-      const b = colliders[j];
+      const b = colliders[j]!;
       if (collides(a, b)) {
         return true;
       }
