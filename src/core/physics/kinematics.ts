@@ -10,8 +10,6 @@ export const surfaceReflectEffect = (massPoint: MassPoint, axis: Vector2D): Phys
   if (dot(v, axis) < 0) {
     const dv = multiply(projectionComponent(v, axis), -2);
     return {
-      // TODO no bumb into
-      // dp: multiply(v, -tick),
       dp: zero,
       dv,
       da: zero
