@@ -8,7 +8,9 @@ import classNames from "classnames";
 
 export interface ControlsProps {
   mode: Mode;
+  domMode: boolean;
   paused: boolean;
+  toggleDomMode?: React.DispatchWithoutAction;
   togglePaused?: React.DispatchWithoutAction;
   handleLayoutMode?: () => void;
   handlePlayMode?: () => void;
@@ -18,10 +20,12 @@ export interface ControlsProps {
 
 export const Controls: React.FC<ControlsProps> = ({
   mode,
+  domMode,
   paused,
+  toggleDomMode,
+  togglePaused,
   handleLayoutMode,
   handlePlayMode,
-  togglePaused,
   handleSave,
   handleLoad,
 }) => {
@@ -64,7 +68,7 @@ export const Controls: React.FC<ControlsProps> = ({
           <div></div>
         </div>
       </div>
-      <span className={styles.span}>GIZMO BALL</span>
+      {<span onClick={toggleDomMode} className={styles.span}>{domMode ? "DOM BOOST" : "GIZMO BALL"}</span>}
     </div>
   );
 };

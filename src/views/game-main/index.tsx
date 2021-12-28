@@ -1,7 +1,7 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useReducer, useState } from "react";
 import classNames from "classnames";
 import styles from "./style.module.css";
-import { EditorGamePanel, PlayingGamePanel } from "../../components/game-panel";
+import { DOMBoostPlayingGamePanel, EditorGamePanel, PlayingGamePanel } from "../../components/game-panel";
 import { ItemCollection } from "../../components/item-collection";
 import { ToolCollection } from "../../components/tool-collection";
 import { Controls } from "../../components/controls";
@@ -34,12 +34,14 @@ const normalizeToCenter = (pointer: Vector2D, size: Vector2D, length: number) =>
   return add(normalized, offset);
 };
 
+const toggleBoolean = (p: boolean): boolean => !p;
 export const GameMainView: React.FC = () => {
   const saveLoad = useContext(SaveLoadService);
   const [itemName, setItemName] = useState<OperationItemNames>("select");
   const [mapItems, _setMapItems] = useState<MapItem[]>(() =>
     createBorder(gridLength, gridXCellCounts, gridYCellCounts),
   );
+  const [domMode, toggleDomMode] = useReducer(toggleBoolean, false);
   const setMapItems: React.Dispatch<React.SetStateAction<MapItem[]>> = (action) =>
     _setMapItems((items) => {
       const pendingItems = typeof action === "function" ? action(items) : action;
@@ -50,7 +52,7 @@ export const GameMainView: React.FC = () => {
   const [mode, setMode] = useState(Mode.Layout);
   const isEditing = mode === Mode.Layout;
   const [paused, setPaused] = useState(false);
-  const togglePaused = useCallback(() => setPaused((p) => !p), []);
+  const togglePaused = useCallback(() => setPaused(toggleBoolean), []);
   const handleLayoutMode = useCallback(() => {
     setMode(Mode.Layout);
     setPaused(false);
@@ -153,11 +155,7 @@ export const GameMainView: React.FC = () => {
             onDropItem={handleDropItem}
           />
         ) : (
-          <PlayingGamePanel
-            paused={paused}
-            movables={mapItems.filter(isMovable).map((item) => ({ ...item, status: MapItemStatus.Normal }))}
-            statics={mapItems.filter(isStatic).map((item) => ({ ...item, status: MapItemStatus.Normal }))}
-          />
+          renderPlaying(domMode, paused, mapItems)
         )}
       </div>
       <div className={classNames(styles["right-side"], styles.border)}>
@@ -175,7 +173,9 @@ export const GameMainView: React.FC = () => {
         <div className={classNames(styles["right-bottom"], styles.border)}>
           <Controls
             mode={mode}
+            domMode={domMode}
             paused={paused}
+            toggleDomMode={toggleDomMode}
             togglePaused={togglePaused}
             handleLayoutMode={handleLayoutMode}
             handlePlayMode={handlePlayMode}
@@ -185,5 +185,15 @@ export const GameMainView: React.FC = () => {
         </div>
       </div>
     </div>
+  );
+};
+
+const renderPlaying = (domMode: boolean, paused: boolean, mapItems: MapItem[]) => {
+  const movables = mapItems.filter(isMovable).map((item) => ({ ...item, status: MapItemStatus.Normal }));
+  const statics = mapItems.filter(isStatic).map((item) => ({ ...item, status: MapItemStatus.Normal }));
+  return domMode ? (
+    <DOMBoostPlayingGamePanel paused={paused} movables={movables} statics={statics} />
+  ) : (
+    <PlayingGamePanel paused={paused} movables={movables} statics={statics} />
   );
 };
