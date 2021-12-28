@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import classNames from "classnames";
 import styles from "./style.module.css";
 import { EditorGamePanel, PlayingGamePanel } from "../../components/game-panel";
@@ -25,6 +25,7 @@ import { hasAnyCollision } from "../../core/physics/collider";
 import { Mode } from "../../core/controller/schema";
 import { createBorder, createMapItem, sizeOfMapItem } from "../../core/map-items/factory";
 import type { MapItemTransferData } from "../../core/map-items/data-transfer";
+import { SaveLoadService } from "../../services/save-load";
 
 const normalizeToCenter = (pointer: Vector2D, size: Vector2D, length: number) => {
   const offset = multiply(size, 0.5);
@@ -34,6 +35,7 @@ const normalizeToCenter = (pointer: Vector2D, size: Vector2D, length: number) =>
 };
 
 export const GameMainView: React.FC = () => {
+  const saveLoad = useContext(SaveLoadService);
   const [itemName, setItemName] = useState<OperationItemNames>("select");
   const [mapItems, _setMapItems] = useState<MapItem[]>(() =>
     createBorder(gridLength, gridXCellCounts, gridYCellCounts),
@@ -56,6 +58,21 @@ export const GameMainView: React.FC = () => {
   const handlePlayMode = useCallback(() => {
     setMode(Mode.Play);
   }, []);
+  const handleLoad = useCallback(() => {
+    saveLoad
+      .load()
+      .then((items) => {
+        setMapItems(items);
+      })
+      .catch((error) => {
+        alert(error);
+      });
+  }, [saveLoad]);
+  const handleSave = useCallback(() => {
+    saveLoad.save(mapItems).catch((error) => {
+      alert(error);
+    });
+  }, [saveLoad, mapItems]);
   const handleGridClick = useCallback(
     (offset: Vector2D) => {
       itemName !== "select" &&
@@ -104,16 +121,16 @@ export const GameMainView: React.FC = () => {
       const handler = (e: KeyboardEvent): void => {
         const action = e.key.toLocaleLowerCase();
         switch (action) {
-          case 'delete':
+          case "delete":
             handleRemoveItem();
             break;
-          case 'r':
+          case "r":
             handleRotateItem();
             break;
-          case '=':
+          case "=":
             handleZoomInItem();
             break;
-          case '-':
+          case "-":
             handleZoomOutItem();
             break;
         }
@@ -162,6 +179,8 @@ export const GameMainView: React.FC = () => {
             togglePaused={togglePaused}
             handleLayoutMode={handleLayoutMode}
             handlePlayMode={handlePlayMode}
+            handleLoad={handleLoad}
+            handleSave={handleSave}
           />
         </div>
       </div>
