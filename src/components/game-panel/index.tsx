@@ -18,10 +18,13 @@ import { replaceItemInArray } from "../../core/physics/utils";
 import { add, multiply, substract, vector } from "../../core/physics/vector";
 import baffle from "../../img/baffle.png";
 import ball from "../../img/ball.png";
+import grid from "../../img/grid.png";
 import { MapItemComponent } from "../map-item";
 import { patchBaffleDOM, patchBallDOM } from "../map-item/dom-patch";
 import styles from "./style.module.css";
-
+const gridBackgroundStyle: React.CSSProperties = {
+  backgroundImage: `url(${grid})`,
+};
 export interface GamePanelProps {
   mapItems: MapItem[];
   onMapItemsChange?: (mapItems: MapItem[]) => void;
@@ -64,6 +67,7 @@ export const EditorGamePanel: React.FC<GamePanelProps> = ({ mapItems, onMapItems
       <div
         ref={panelContainerRef}
         className={styles["game-grid"]}
+        style={gridBackgroundStyle}
         onDragOver={preventDragOverEvent}
         onDrop={handleDrop}
         onClick={handlePanelClick}
@@ -111,7 +115,7 @@ export const PlayingGamePanel: React.FC<IPlayingGamePanelProp> = ({ statics, mov
   }, [paused]);
   return (
     <div className={styles["game-panel"]}>
-      <div className={styles["game-grid"]}>
+      <div className={styles["game-grid"]} style={gridBackgroundStyle}>
         <StaticPanel items={statics} />
         <MovingsPanel items={movables} />
       </div>
@@ -140,9 +144,9 @@ export const DOMBoostPlayingGamePanel: React.FC<IPlayingGamePanelProp> = ({ paus
   useLayoutEffect(() => {
     if (!paused) {
       const grid = gridRef.current!;
-      const nodes = Array.from(grid.querySelectorAll('img'));
-      const ballNodes = nodes.filter(node => node.src.includes(ball));
-      const baffleNodes = nodes.filter(node => node.src.includes(baffle));
+      const nodes = Array.from(grid.querySelectorAll("img"));
+      const ballNodes = nodes.filter((node) => node.src.includes(ball));
+      const baffleNodes = nodes.filter((node) => node.src.includes(baffle));
       return createGizmoballPlayingEffectCleanUp(movables, statics, (baffles, balls) => {
         for (let i = 0; i < baffleNodes.length; i++) {
           const baffleEl = baffleNodes[i]!;
@@ -155,7 +159,7 @@ export const DOMBoostPlayingGamePanel: React.FC<IPlayingGamePanelProp> = ({ paus
           if (ballItem) {
             patchBallDOM(ballItem, ballEl);
           } else {
-            ballEl.style.display = 'none';
+            ballEl.style.display = "none";
           }
         }
       });
@@ -164,7 +168,7 @@ export const DOMBoostPlayingGamePanel: React.FC<IPlayingGamePanelProp> = ({ paus
   }, [paused]);
   return (
     <div className={styles["game-panel"]}>
-      <div className={styles["game-grid"]} ref={gridRef}>
+      <div className={styles["game-grid"]} style={gridBackgroundStyle} ref={gridRef}>
         <StaticPanel items={statics} />
         <MovingsPanel items={movables} />
       </div>
