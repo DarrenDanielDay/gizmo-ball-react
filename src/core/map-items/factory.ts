@@ -91,7 +91,7 @@ export const createMapItem = (name: MapItemNames, center: Vector2D, length: numb
       };
     case "baffle-alpha":
     case "baffle-beta":
-      const colliderCenter = substract(center, vector(0, 3 * length / 8));
+      const colliderCenter = substract(center, vector(0, (3 * length) / 8));
       return {
         name,
         ...basicProps,

@@ -3,8 +3,6 @@ import type { FinalPhysicalEffect, MassPoint, PhysicalEffect, Vector2D } from ".
 import { zeroEffect } from "./utils";
 import { add, dot, multiply, norm, projectionComponent, substract, unitization, zero } from "./vector";
 
-
-
 export const surfaceReflectEffect = (massPoint: MassPoint, axis: Vector2D): PhysicalEffect => {
   const { v } = massPoint;
   if (dot(v, axis) < 0) {
@@ -12,7 +10,7 @@ export const surfaceReflectEffect = (massPoint: MassPoint, axis: Vector2D): Phys
     return {
       dp: zero,
       dv,
-      da: zero
+      da: zero,
     };
   }
   return zeroEffect;
@@ -36,7 +34,10 @@ export const perfectElasticCollisionEffect = (
     const c2 = (2 * m1) / sum;
     const dv1 = multiply(substract(v2t, v1t), c1);
     const dv2 = multiply(substract(v1t, v2t), c2);
-    return [{ dp: zero, dv: dv1, da: zero }, { dp: zero, dv: dv2, da: zero }];
+    return [
+      { dp: zero, dv: dv1, da: zero },
+      { dp: zero, dv: dv2, da: zero },
+    ];
   }
   // Else they are not getting closer
   return [zeroEffect, zeroEffect];
@@ -61,6 +62,6 @@ export const kinematicalEffect = (massPoint: MassPoint): FinalPhysicalEffect => 
   return {
     da: zero,
     dv: substract(constraint(add(v, multiply(a, tick)), maxV), v),
-    dp: add(multiply(v, tick), multiply(a, tick * tick / 2)),
+    dp: add(multiply(v, tick), multiply(a, (tick * tick) / 2)),
   };
 };

@@ -8,5 +8,5 @@ export const SaveLoadService = React.createContext<ISaveLoadService>({
   },
   save() {
     return die("Method not implemented");
-  }
+  },
 });

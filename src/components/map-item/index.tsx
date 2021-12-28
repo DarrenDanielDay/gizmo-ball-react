@@ -25,9 +25,12 @@ export const MapItemComponent: React.FC<IMapItemComponentProp> = ({ mapItem: ite
   const rotation = canRotate(item) ? item.rotation : Rotation.Up;
   const geometryStyle: CSSProperties = { left: position.x, top: position.y, width: size.x, height: size.y };
   const selected = status === MapItemStatus.Selected;
-  const handleDragStart = useCallback((e: React.DragEvent<HTMLImageElement>): void => {
-    setDataToTransfer(e.dataTransfer, { item, from: "panel", pickedUpPosition: vector(e.pageX, e.pageY) });
-  }, [item]);
+  const handleDragStart = useCallback(
+    (e: React.DragEvent<HTMLImageElement>): void => {
+      setDataToTransfer(e.dataTransfer, { item, from: "panel", pickedUpPosition: vector(e.pageX, e.pageY) });
+    },
+    [item],
+  );
   return name === "border" ? null : (
     <img
       draggable={selected}

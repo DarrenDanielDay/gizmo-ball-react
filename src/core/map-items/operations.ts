@@ -113,4 +113,4 @@ export const pipeTurnedOutlets = (pipeTurned: PipeTurnedMapItem): [Vector2D, Vec
   const possible1 = rotate(rotationDirectionMap[pipeTurned.rotation]);
   const possible2 = rotate(possible1);
   return [possible1, possible2];
-}
+};

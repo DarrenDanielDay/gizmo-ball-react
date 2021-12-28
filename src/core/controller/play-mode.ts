@@ -4,12 +4,7 @@ import { pipeTurnedOutlets } from "../map-items/operations";
 import type { Baffle, Ball, PolygonColliderMapItem, StaticMapItem } from "../map-items/schemas";
 import { reduceClosestPoint } from "../physics/collider";
 import { kinematicalEffect, perfectElasticCollisionEffect, surfaceReflectEffect } from "../physics/kinematics";
-import type {
-  FinalPhysicalEffect,
-  MassPoint,
-  Polygon,
-  Vector2D,
-} from "../physics/schema";
+import type { FinalPhysicalEffect, MassPoint, Polygon, Vector2D } from "../physics/schema";
 import { lastIndex, nextElement, nextIndex, zeroEffect } from "../physics/utils";
 import {
   add,

@@ -45,4 +45,3 @@ export interface Triangle extends Polygon {
 export interface Quadrilateral extends Polygon {
   vertexes: [Vector2D, Vector2D, Vector2D, Vector2D];
 }
-

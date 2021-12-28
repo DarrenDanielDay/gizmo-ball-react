@@ -31,7 +31,9 @@ export const browserSaveLoadService: ISaveLoadService = {
   },
   async load() {
     const json =
-      typeof window.showOpenFilePicker === "function" ? await getFileByNonStandardAPI() : await getFileContentByInputElement();
+      typeof window.showOpenFilePicker === "function"
+        ? await getFileByNonStandardAPI()
+        : await getFileContentByInputElement();
     try {
       const parsed: unknown = JSON.parse(json);
       if (Array.isArray(parsed) && parsed.every((item) => isMapItem(item))) {
@@ -66,7 +68,7 @@ const getFileByNonStandardAPI = async (): Promise<string> => {
     return await file.text();
   } catch (error) {
     if (error instanceof DOMException) {
-      return die('User canceled.');
+      return die("User canceled.");
     }
     throw error;
   }
@@ -76,15 +78,15 @@ const getFileContentByInputElement = async () => {
   return await new Promise<string>((resolve, reject) => {
     const cleanUp = () => {
       input.removeEventListener("change", handleChange);
-    }
+    };
     const fail = (message?: string) => {
       cleanUp();
       reject(message);
-    }
+    };
     const finish = (text: string) => {
       cleanUp();
       resolve(text);
-    }
+    };
     const input = document.createElement("input");
     input.setAttribute("type", "file");
     input.setAttribute("accept", ".json");

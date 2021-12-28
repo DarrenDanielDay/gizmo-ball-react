@@ -33,12 +33,11 @@ export interface EdgeCollision extends BaseCollision {
 }
 
 export interface PipeEntryCollision extends BaseCollision {
-  type: 'entry';
+  type: "entry";
   item: PipeMapItem | PipeTurnedMapItem;
   index: number;
   axis: Vector2D;
 }
-
 
 export interface PointCollision extends BaseCollision {
   type: "point";
@@ -65,7 +64,13 @@ export interface InPipeCollision extends BaseCollision {
   item: PipeMapItem | PipeTurnedMapItem;
 }
 
-export type BallCollisions = BallCollision | EdgeCollision | PipeEntryCollision | PointCollision | ArcCollision | InPipeCollision;
+export type BallCollisions =
+  | BallCollision
+  | EdgeCollision
+  | PipeEntryCollision
+  | PointCollision
+  | ArcCollision
+  | InPipeCollision;
 
 export interface ComputedPolygonData {
   absoluteVertexes: Vector2D[];

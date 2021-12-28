@@ -12,7 +12,7 @@ import { MapItemNames, Rotation } from "../map-items/schemas";
 import type { Vector2D } from "../physics/schema";
 import { negate, xElement, yElement } from "../physics/vector";
 
-export type OperationItemNames = 'select' | MapItemNames
+export type OperationItemNames = "select" | MapItemNames;
 
 export const ItemImageMap: Record<MapItemNames, string> = {
   "baffle-alpha": baffle,
@@ -52,7 +52,6 @@ export const rotationDirectionMap: Record<Rotation, Vector2D> = {
   [Rotation.Down]: yElement,
   [Rotation.Left]: negate(xElement),
 };
-
 
 export const pipeEntryAcceptProjection = 10;
 

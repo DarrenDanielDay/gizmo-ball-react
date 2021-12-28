@@ -71,7 +71,7 @@ export const collides = (a: Collider, b: Collider) => {
   if (aIsPolygon && bIsCircle) {
     return polygonCollidesWithCircle(a, b);
   }
-  return die('Unknown collider combination.')
+  return die("Unknown collider combination.");
 };
 
 export const hasAnyCollision = (colliders: Collider[]) =>
@@ -117,4 +117,3 @@ export const detectCircleCollidesWithCircle = (c1: Circle, c2: Circle) => {
     flag: d < c1.radius + c2.radius,
   };
 };
-
