@@ -41,7 +41,7 @@ export const GameMainView: React.FC = () => {
   const [mapItems, _setMapItems] = useState<MapItem[]>(() =>
     createBorder(gridLength, gridXCellCounts, gridYCellCounts),
   );
-  const [domMode, toggleDomMode] = useReducer(toggleBoolean, false);
+  const [domMode, toggleDomMode] = useReducer(toggleBoolean, true);
   const setMapItems: React.Dispatch<React.SetStateAction<MapItem[]>> = (action) =>
     _setMapItems((items) => {
       const pendingItems = typeof action === "function" ? action(items) : action;

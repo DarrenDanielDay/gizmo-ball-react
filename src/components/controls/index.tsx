@@ -68,7 +68,7 @@ export const Controls: React.FC<ControlsProps> = ({
           <div></div>
         </div>
       </div>
-      {<span onClick={toggleDomMode} className={styles.span}>{domMode ? "DOM BOOST" : "GIZMO BALL"}</span>}
+      {<span onClick={toggleDomMode} className={styles.span}>{domMode ? "GIZMO BALL DOM" : "GIZMO BALL REACT"}</span>}
     </div>
   );
 };
