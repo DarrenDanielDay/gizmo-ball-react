@@ -28,7 +28,6 @@ import {
   zero,
 } from "../physics/vector";
 import type { BallCollisions, ComputedPolygonData } from "./schema";
-const __DEV__ = import.meta.env.NODE_ENV === "development";
 
 const reduceMassPointWithEffect = (massPoint: MassPoint, physicalEffect: FinalPhysicalEffect): MassPoint => ({
   ...massPoint,
@@ -247,11 +246,6 @@ export const reduceNextTickWithPrecomputed = (
     const { massPoint } = currentBall;
     const { v } = massPoint;
     if (entry.length) {
-      if (__DEV__) {
-        if (entry.length !== 1) {
-          console.error("invalid entry collisions:", entry);
-        }
-      }
       const e = entry[0]!;
       const { middles, edges } = polygonData.get(e.item)!;
       const middle = middles[e.index]!;
@@ -278,11 +272,6 @@ export const reduceNextTickWithPrecomputed = (
       }
     }
     if (inner.length) {
-      if (__DEV__) {
-        if (inner.length !== 1) {
-          console.error("invalid inner collision:", inner);
-        }
-      }
       const inn = inner[0]!;
       const { item } = inn;
       const positionDelta = substract(item.center, currentBall.center);
@@ -300,8 +289,6 @@ export const reduceNextTickWithPrecomputed = (
             dp: changeToMoveIntoAxis,
             dv,
           });
-        } else if (__DEV__) {
-          console.error("impossible!");
         }
       } else {
         // TODO precompute
@@ -322,8 +309,6 @@ export const reduceNextTickWithPrecomputed = (
               dp: changeToMoveIntoAxis,
               dv,
             });
-          } else if (__DEV__) {
-            console.error("impossible!");
           }
         }
       }

@@ -57,7 +57,3 @@ export const rotationDirectionMap: Record<Rotation, Vector2D> = {
 export const pipeEntryAcceptProjection = 10;
 
 export const pipeTurnAcceptProjection = 5;
-
-// For debug
-// @ts-ignore
-window.down = v => ({x: v.x / gridLength, y: v.y / gridLength})
