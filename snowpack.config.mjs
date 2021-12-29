@@ -1,4 +1,5 @@
 /** @type {import("snowpack").SnowpackUserConfig } */
+const DEPLOY_BASE_URL = process.env.DEPLOY_BASE_URL;
 const config = {
   mount: {
     public: { url: '/', static: true },
@@ -21,7 +22,8 @@ const config = {
   ],
   optimize: {
     /* Example: Bundle your final build: */
-    // "bundle": true,
+    minify: true,
+    treeshake: true
   },
   packageOptions: {
     /* ... */
@@ -31,6 +33,7 @@ const config = {
   },
   buildOptions: {
     sourcemap: true,
+    baseUrl: DEPLOY_BASE_URL ?? '/'
   },
 };
 export default config;
