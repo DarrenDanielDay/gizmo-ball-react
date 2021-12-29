@@ -18,3 +18,8 @@
   height: 48px;
   width: 48px;
 }
+
+.baffle-control-hint {
+  width: max-content;
+  text-align: left;
+}

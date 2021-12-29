@@ -1,0 +1,30 @@
+.tooltip-host {
+  position: relative;
+  display: inline-block;
+}
+.tooltip-host:hover .tooltip {
+  visibility: visible;
+}
+.tooltip-host:hover .tooltip .tooltip-content::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  transform: translateY(-2px) rotateZ(45deg);
+  background-color: darkgray;
+  box-shadow: 2px 2px 2px gray;
+}
+.tooltip-host .tooltip {
+  visibility: hidden;
+  left: 50%;
+  position: absolute;
+}
+.tooltip-host .tooltip .tooltip-content {
+  background-color: darkgray;
+  box-shadow: 2px 2px 2px gray;
+  padding: 4px;
+  border-radius: 0.5em;
+  transform: translate3d(-50%, -100%, 0);
+}

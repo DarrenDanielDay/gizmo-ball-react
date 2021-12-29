@@ -4,6 +4,7 @@ import remove from "../../img/remove.png";
 import rotate from "../../img/rotate.png";
 import zoomOut from "../../img/zoom-out.png";
 import styles from "./style.module.css";
+import { Tooltip } from "../tooltip";
 
 export interface ToolCollectionProps {
   onRotate?: () => void;
@@ -20,24 +21,24 @@ export const ToolCollection: React.FC<ToolCollectionProps> = ({ onRotate, onRemo
         <tbody>
           <tr>
             <td>
-              <Tooltip hotkey="R">
+              <Tooltip tooltip={<kbd>R</kbd>}>
                 <img className={styles.tool} src={rotate} onClick={onRotate} />
               </Tooltip>
             </td>
             <td>
-              <Tooltip hotkey="Del">
+              <Tooltip tooltip={<kbd>Del</kbd>}>
                 <img className={styles.tool} src={remove} onClick={onRemove} />
               </Tooltip>
             </td>
           </tr>
           <tr>
             <td>
-              <Tooltip hotkey="=">
+              <Tooltip tooltip={<kbd>=</kbd>}>
                 <img className={styles.tool} src={zoomIn} onClick={onZoomIn} />
               </Tooltip>
             </td>
             <td>
-              <Tooltip hotkey="-">
+              <Tooltip tooltip={<kbd>-</kbd>}>
                 <img className={styles.tool} src={zoomOut} onClick={onZoomOut} />
               </Tooltip>
             </td>
@@ -48,13 +49,4 @@ export const ToolCollection: React.FC<ToolCollectionProps> = ({ onRotate, onRemo
   );
 };
 
-const Tooltip: React.FC<{ hotkey: React.ReactNode }> = ({ children, hotkey }) => {
-  return (
-    <div className={styles["tooltip-host"]}>
-      <div className={styles.tooltip}>
-        <kbd>{hotkey}</kbd>
-      </div>
-      {children}
-    </div>
-  );
-};
+
