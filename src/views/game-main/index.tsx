@@ -35,6 +35,7 @@ const normalizeToCenter = (pointer: Vector2D, size: Vector2D, length: number) =>
 };
 
 const toggleBoolean = (p: boolean): boolean => !p;
+const noop = () => {};
 export const GameMainView: React.FC = () => {
   const saveLoad = useContext(SaveLoadService);
   const [itemName, setItemName] = useState<OperationItemNames>("select");
@@ -100,20 +101,23 @@ export const GameMainView: React.FC = () => {
     },
     [selected],
   );
-  const handleRotateItem = useCallback(() => {
+  const createToolHandler = (callBack: () => void, deps: unknown[]) => useCallback(() => isEditing ? callBack() : noop(), [
+    isEditing, ...deps
+  ]);
+  const handleRotateItem = createToolHandler(() => {
     setMapItems((items) =>
       selected && canRotate(selected) ? replaceItemInArray(items, selected, rotateItem(selected)) : items,
     );
   }, [selected]);
-  const handleRemoveItem = useCallback(() => {
+  const handleRemoveItem = createToolHandler(() => {
     setMapItems((items) => (selected ? removeItemInArray(items, selected) : items));
   }, [selected]);
-  const handleZoomInItem = useCallback(() => {
+  const handleZoomInItem = createToolHandler(() => {
     setMapItems((items) =>
       selected && canZoom(selected) ? replaceItemInArray(items, selected, zoomItem(selected, zoomInReducer)) : items,
     );
   }, [selected]);
-  const handleZoomOutItem = useCallback(() => {
+  const handleZoomOutItem = createToolHandler(() => {
     setMapItems((items) =>
       selected && canZoom(selected) ? replaceItemInArray(items, selected, zoomItem(selected, zoomOutReducer)) : items,
     );
