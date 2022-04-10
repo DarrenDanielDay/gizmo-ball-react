@@ -101,9 +101,8 @@ export const GameMainView: React.FC = () => {
     },
     [selected],
   );
-  const createToolHandler = (callBack: () => void, deps: unknown[]) => useCallback(() => isEditing ? callBack() : noop(), [
-    isEditing, ...deps
-  ]);
+  const createToolHandler = (callBack: () => void, deps: unknown[]) =>
+    useCallback(() => (isEditing ? callBack() : noop()), [isEditing, ...deps]);
   const handleRotateItem = createToolHandler(() => {
     setMapItems((items) =>
       selected && canRotate(selected) ? replaceItemInArray(items, selected, rotateItem(selected)) : items,

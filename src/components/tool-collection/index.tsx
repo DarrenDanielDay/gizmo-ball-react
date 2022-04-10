@@ -48,5 +48,3 @@ export const ToolCollection: React.FC<ToolCollectionProps> = ({ onRotate, onRemo
     </div>
   );
 };
-
-
