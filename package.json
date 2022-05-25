@@ -1,4 +1,16 @@
 {
+  "name": "gizmo-ball-react",
+  "version": "1.0.0",
+  "description": "A ball game with simple 2D physics and React.",
+  "author": {
+    "email": "Darren_Daniel_Day@hotmail.com",
+    "name": "Darren Daniel Day",
+    "url": "https://github.com/DarrenDanielDay"
+  },
+  "repository": {
+    "url": "https://github.com/DarrenDanielDay/gizmo-ball-react"
+  },
+  "license": "MIT",
   "scripts": {
     "start": "snowpack dev",
     "build": "snowpack build",
